@@ -189,6 +189,40 @@ test/core/irc/
     └── read_marker_handler_test.dart
 ```
 
+## Phase 6: Interactive (Complete)
+
+Extensions IRCv3 pour interactions temps reel:
+- `TypingCommand` / `TagmsgCommand` : +typing indicator via TAGMSG
+- `TypingHandler` : typing notifications avec auto-expiry (6s active, 30s paused)
+- `ReplyCommand` / `ReplyNoticeCommand` : +draft/reply message replies
+- `ReplyHandler` : reply chain tracking, thread depth calculation
+- `ChannelContextPrivmsgCommand` / `ChannelContextNoticeCommand` : +draft/channel-context
+- `ChannelContextHandler` : channel context for DMs
+- `IrcMessageChannelContextExtension` : convenient message extensions
+
+### Fichiers cles Phase 6
+```
+lib/core/irc/
+├── commands/
+│   ├── typing_commands.dart           # TAGMSG, +typing commands
+│   ├── reply_commands.dart            # +draft/reply PRIVMSG/NOTICE
+│   └── channel_context_commands.dart  # +draft/channel-context
+└── protocol/
+    ├── typing_handler.dart            # Typing notifications & expiry
+    ├── reply_handler.dart             # Reply chain tracking
+    └── channel_context_handler.dart   # Channel context parsing
+
+test/core/irc/
+├── commands/
+│   ├── typing_commands_test.dart
+│   ├── reply_commands_test.dart
+│   └── channel_context_commands_test.dart
+└── protocol/
+    ├── typing_handler_test.dart
+    ├── reply_handler_test.dart
+    └── channel_context_handler_test.dart
+```
+
 ## Conventions
 
 ### Code Style
@@ -248,9 +282,15 @@ test/core/irc/
 - multiline (draft/multiline batches) ✓
 - read-marker (draft/read-marker, MARKREAD) ✓
 
-### A implementer (Phase 6+)
-- +typing (typing notifications)
-- reply (message replies)
+### Implementees (Phase 6)
+- +typing (typing notifications via TAGMSG) ✓
+- +draft/reply (message replies with threading) ✓
+- +draft/channel-context (channel context for DMs) ✓
+
+### A implementer (Phase 7+)
+- UI/UX features (Phase 7)
+- Platform features (Phase 8)
+- Polish & tests (Phase 9)
 
 ## References
 

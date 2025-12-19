@@ -13,3 +13,6 @@ export 'whox_command.dart';
 export 'batch_commands.dart';
 export 'chathistory_commands.dart';
 export 'read_marker_commands.dart';
+export 'typing_commands.dart';
+export 'reply_commands.dart';
+export 'channel_context_commands.dart';

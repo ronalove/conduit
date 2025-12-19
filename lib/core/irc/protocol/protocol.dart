@@ -17,3 +17,6 @@ export 'batch_handler.dart';
 export 'chathistory_handler.dart';
 export 'multiline_handler.dart';
 export 'read_marker_handler.dart';
+export 'typing_handler.dart';
+export 'reply_handler.dart';
+export 'channel_context_handler.dart';

@@ -37,6 +37,9 @@ abstract class IrcTags {
 
   /// React emoji.
   static const String react = '+draft/react';
+
+  /// Channel context for private messages.
+  static const String channelContext = '+draft/channel-context';
 }
 
 /// Utilities for working with IRCv3 message tags.
