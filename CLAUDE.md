@@ -42,6 +42,34 @@ Core IRC implementee avec TDD:
 - `IrcCommand` classes : NICK, USER, JOIN, PART, QUIT, PRIVMSG, etc.
 - `NumericHandler` : dispatch des numerics (001-005, 353, 366, 4xx)
 
+## Phase 2: CAP & SASL (Complete)
+
+IRCv3 capability negotiation et authentification:
+- `CapCommand` : CAP LS, LIST, REQ, END subcommands
+- `AuthenticateCommand` : SASL PLAIN encoding, chunking
+- `CapabilityParser` : parse cap=value format, modifiers (-, =, ~)
+- `CapabilityNegotiator` : state machine idle -> negotiating -> completed
+- `SaslAuthenticator` : SASL PLAIN flow avec error handling (902-908)
+- `StsPolicy` / `StsPolicyStore` : STS policy storage et enforcement
+
+### Fichiers cles Phase 2
+```
+lib/core/irc/
+├── commands/
+│   └── capability_commands.dart  # CAP, AUTHENTICATE commands
+├── parser/
+│   └── capability_parser.dart    # Capability, CapabilitySet, STS parsing
+└── protocol/
+    ├── capability_negotiator.dart # CAP negotiation state machine
+    ├── sasl_authenticator.dart    # SASL PLAIN authentication
+    └── sts_policy.dart            # STS policy management
+
+integration_test/
+├── cap_test.dart                  # CAP negotiation tests
+├── sasl_test.dart                 # SASL authentication tests
+└── sts_test.dart                  # STS policy tests
+```
+
 ## Conventions
 
 ### Code Style
@@ -69,9 +97,12 @@ Core IRC implementee avec TDD:
 
 ## IRCv3 Features
 
-Capabilities a implémenter :
-- CAP 302, cap-notify
-- SASL v3.2 (PLAIN)
+### Implementees (Phase 2)
+- CAP 302, cap-notify ✓
+- SASL v3.2 (PLAIN) ✓
+- STS (Strict Transport Security) ✓
+
+### A implementer (Phase 3+)
 - message-tags, msgid, server-time
 - echo-message, labeled-response
 - batch, chathistory, multiline
@@ -98,10 +129,42 @@ flutter build ios
 flutter build apk
 flutter build windows
 
-# Tests
+# Tests unitaires
 flutter test
 flutter test --coverage
+
+# Tests d'integration (necessite serveur IRC)
+export IRC_TEST_HOST="irc.example.com"
+export IRC_TEST_NICK="conduit-test"
+export IRC_TEST_USER="conduit"
+flutter test integration_test/
+# ou
+./scripts/run_integration_tests.sh
 
 # Code generation (freezed, riverpod)
 dart run build_runner build --delete-conflicting-outputs
 ```
+
+## Tests d'Integration
+
+Infrastructure de tests d'integration avec serveur IRC (Ergo recommande).
+
+### Variables d'environnement requises
+
+- `IRC_TEST_HOST` : Hostname du serveur IRC
+- `IRC_TEST_NICK` : Nickname pour les tests
+- `IRC_TEST_USER` : Username pour les tests
+
+### Variables optionnelles
+
+- `IRC_TEST_PORT` : Port (defaut: 6697)
+- `IRC_TEST_CHANNEL` : Canal de test (defaut: #conduit-test)
+- `IRC_TEST_PASS` : Mot de passe serveur/SASL
+- `IRC_TEST_ALLOW_INVALID_CERTS` : Accepter certificats auto-signes
+
+### Couverture actuelle
+
+- Connexion TLS et Registration
+- CAP negotiation (LS, REQ, ACK, END)
+- SASL PLAIN authentication
+- STS policy detection
