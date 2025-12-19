@@ -27,3 +27,20 @@ class AwayCommand extends IrcCommand {
         params: message != null ? [message!] : [],
       );
 }
+
+/// SETNAME command - changes the user's realname (gecos).
+///
+/// Requires the 'setname' capability to be enabled on the server.
+class SetnameCommand extends IrcCommand {
+  /// The new realname.
+  final String realname;
+
+  /// Creates a SETNAME command with the new realname.
+  const SetnameCommand(this.realname);
+
+  @override
+  IrcMessage toMessage() => IrcMessage(
+        command: 'SETNAME',
+        params: [realname],
+      );
+}

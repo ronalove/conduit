@@ -2,6 +2,32 @@ import 'package:conduit/core/irc/commands/presence_commands.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('SetnameCommand', () {
+    test('generates SETNAME with realname', () {
+      const command = SetnameCommand('New Real Name');
+      final message = command.toMessage();
+
+      expect(message.command, equals('SETNAME'));
+      expect(message.params, equals(['New Real Name']));
+    });
+
+    test('serializes to IRC format correctly', () {
+      const command = SetnameCommand('My Real Name');
+      final message = command.toMessage();
+      final raw = message.toRaw();
+
+      expect(raw, equals('SETNAME :My Real Name\r\n'));
+    });
+
+    test('handles empty realname', () {
+      const command = SetnameCommand('');
+      final message = command.toMessage();
+
+      expect(message.command, equals('SETNAME'));
+      expect(message.params, equals(['']));
+    });
+  });
+
   group('AwayCommand', () {
     test('generates AWAY with message', () {
       const command = AwayCommand(message: 'Gone for lunch');
