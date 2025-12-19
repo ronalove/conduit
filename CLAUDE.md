@@ -248,6 +248,45 @@ test/core/irc/
 - **Connexion** : TLS uniquement
 - **Auth** : SASL PLAIN over TLS
 
+## Serveur de Developpement
+
+Configuration du serveur Ergo pour le developpement et les tests.
+
+### Acces
+- **Host** : `10.0.0.4` (reseau local)
+- **Port plain** : 6667
+- **Port TLS** : 6697 (TLS 1.2+)
+
+### Configuration Ergo
+- **Network** : `Ronan`
+- **Server name** : `ronan.lol`
+- **Config path** : `/Volumes/public/docker/ircd/`
+- **Config file** : `ircd.yaml` (modifiable selon besoins Conduit)
+- **Certificats** : `fullchain.pem`, `privkey.pem` (certificats valides)
+
+> **Note** : La configuration Ergo peut etre modifiee pour adapter le serveur aux besoins de Conduit.
+
+### Authentification
+- SASL PLAIN et SCRAM-SHA-256 supportes
+- `force-nick-equals-account: true` (nick = nom du compte)
+- `login-via-pass-command: true` (alternative a SASL)
+- Registration ouverte
+
+### Features actives : MODIFIABLE
+- **Multiclient/bouncer** : active (always-on opt-in)
+- **CHATHISTORY** : max 1000 messages, expire 1 semaine
+- **IP cloaking** : active
+- **UTF-8** : enforce-utf8 active
+- **Multiline** : max 4096 bytes, 100 lines
+
+### Limites : MODIFIABLE
+- Nick length : 32
+- Channel length : 64
+- Topic length : 390
+- Away message : 390
+- Monitor entries : 100
+- Channels per client : 100
+
 ## IRCv3 Features
 
 ### Implementees (Phase 2)
@@ -287,10 +326,40 @@ test/core/irc/
 - +draft/reply (message replies with threading) ✓
 - +draft/channel-context (channel context for DMs) ✓
 
-### A implementer (Phase 7+)
-- UI/UX features (Phase 7)
-- Platform features (Phase 8)
-- Polish & tests (Phase 9)
+### A implementer (Phase 8+)
+- Integration UI/IRC (Phase 8) - en cours
+- Platform features (Phase 9)
+- Polish & tests (Phase 10)
+
+## Phase 8: Integration (En cours)
+
+Integration entre le backend IRC et l'UI via Riverpod.
+
+### Issue #57: Connection Provider (Complete)
+- `ServerConfig` : configuration serveur (host, port, TLS, SASL credentials)
+- `ConnectionProvider` : wrapper Riverpod de SecureSocketManager
+- `IrcSessionManager` : orchestration CAP/SASL/NICK/USER registration
+- Auto-reconnect avec ExponentialBackoffPolicy
+- Entitlements macOS pour connexions reseau
+
+### Fichiers cles Phase 8
+```
+lib/features/connection/
+├── models/
+│   └── server_config.dart         # Configuration serveur
+├── providers/
+│   ├── connection_provider.dart   # Socket + state Riverpod
+│   └── irc_session_manager.dart   # CAP/SASL/registration flow
+└── connection.dart                # Barrel export
+
+macos/Runner/
+├── DebugProfile.entitlements      # +network.client
+└── Release.entitlements           # +network.client
+```
+
+### Compte de test
+- Username: `conduit`
+- Password: `conduit123`
 
 ## References
 
