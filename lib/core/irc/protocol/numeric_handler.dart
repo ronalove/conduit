@@ -31,8 +31,8 @@ class NumericHandler {
       return true;
     }
 
-    if (_defaultHandler != null) {
-      _defaultHandler!(message);
+    if (_defaultHandler case final handler?) {
+      handler(message);
       return true;
     }
 
