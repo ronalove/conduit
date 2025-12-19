@@ -13,3 +13,7 @@ export 'chghost_handler.dart';
 export 'setname_handler.dart';
 export 'invite_notify_handler.dart';
 export 'monitor_handler.dart';
+export 'batch_handler.dart';
+export 'chathistory_handler.dart';
+export 'multiline_handler.dart';
+export 'read_marker_handler.dart';

@@ -154,6 +154,41 @@ test/core/irc/
     └── monitor_handler_test.dart
 ```
 
+## Phase 5: Batch & History (Complete)
+
+Extensions IRCv3 pour batch et historique:
+- `BatchCommand` : BATCH +/-reference commands
+- `BatchHandler` : batch accumulation, nested batches, concurrent batches
+- `ChathistoryCommand` : LATEST, BEFORE, AFTER, AROUND, BETWEEN, TARGETS
+- `ChathistoryHandler` : process chathistory batches, error handling
+- `MultilineHandler` : draft/multiline batch send/receive
+- `MarkreadCommand` / `ReadMarkerHandler` : read position tracking
+
+### Fichiers cles Phase 5
+```
+lib/core/irc/
+├── commands/
+│   ├── batch_commands.dart         # BATCH +/- commands
+│   ├── chathistory_commands.dart   # CHATHISTORY subcommands
+│   └── read_marker_commands.dart   # MARKREAD command
+└── protocol/
+    ├── batch_handler.dart          # Batch accumulation & nested batches
+    ├── chathistory_handler.dart    # Chathistory batch processing
+    ├── multiline_handler.dart      # Multiline message handling
+    └── read_marker_handler.dart    # Read position tracking
+
+test/core/irc/
+├── commands/
+│   ├── batch_commands_test.dart
+│   ├── chathistory_commands_test.dart
+│   └── read_marker_commands_test.dart
+└── protocol/
+    ├── batch_handler_test.dart
+    ├── chathistory_handler_test.dart
+    ├── multiline_handler_test.dart
+    └── read_marker_handler_test.dart
+```
+
 ## Conventions
 
 ### Code Style
@@ -207,9 +242,15 @@ test/core/irc/
 - Monitor (user presence tracking) ✓
 - WHOX (extended WHO queries) ✓
 
-### A implementer (Phase 5+)
-- batch, chathistory, multiline
-- +typing, reply, read-marker
+### Implementees (Phase 5)
+- batch (message grouping, nested batches) ✓
+- chathistory (LATEST, BEFORE, AFTER, AROUND, BETWEEN, TARGETS) ✓
+- multiline (draft/multiline batches) ✓
+- read-marker (draft/read-marker, MARKREAD) ✓
+
+### A implementer (Phase 6+)
+- +typing (typing notifications)
+- reply (message replies)
 
 ## References
 

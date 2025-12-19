@@ -10,3 +10,6 @@ export 'capability_commands.dart';
 export 'presence_commands.dart';
 export 'monitor_commands.dart';
 export 'whox_command.dart';
+export 'batch_commands.dart';
+export 'chathistory_commands.dart';
+export 'read_marker_commands.dart';
