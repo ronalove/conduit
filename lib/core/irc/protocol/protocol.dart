@@ -8,3 +8,4 @@ export 'sts_policy.dart';
 export 'echo_message_handler.dart';
 export 'labeled_response_handler.dart';
 export 'away_notify_handler.dart';
+export 'account_notify_handler.dart';
