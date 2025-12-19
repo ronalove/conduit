@@ -12,3 +12,4 @@ export 'standard_replies.dart';
 export 'user_prefix.dart';
 export 'isupport.dart';
 export 'extended_join.dart';
+export 'whox_parser.dart';

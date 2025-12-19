@@ -9,3 +9,4 @@ export 'connection_commands.dart';
 export 'capability_commands.dart';
 export 'presence_commands.dart';
 export 'monitor_commands.dart';
+export 'whox_command.dart';
