@@ -16,15 +16,31 @@ Client IRCv3 multi-plateforme (Windows, macOS, iOS, Android) avec Flutter.
 
 ```
 lib/
-├── core/irc/          # Client IRC (parser, protocol, state)
-├── core/models/       # Data models (User, Channel, Message)
-├── core/constants/    # IRC numerics, commands
-├── features/          # UI features (auth, chat, channels, settings)
-├── services/          # Storage, notifications
-├── theme/             # Dark theme uniquement
-├── layouts/           # Adaptive layouts (desktop/mobile)
-└── routing/           # Navigation
+├── core/
+│   ├── irc/
+│   │   ├── commands/      # IRC commands (NICK, JOIN, PRIVMSG, etc.)
+│   │   ├── connection/    # Socket manager, line buffer, reconnect
+│   │   ├── parser/        # Message & tag parsing
+│   │   ├── protocol/      # Numeric handlers
+│   │   └── state/         # Connection state machine
+│   ├── constants/         # IRC numerics
+│   └── models/            # Data models (User, Channel, Message)
+├── features/              # UI features (auth, chat, channels, settings)
+├── services/              # Storage, notifications
+├── theme/                 # Dark theme uniquement
+├── layouts/               # Adaptive layouts (desktop/mobile)
+└── routing/               # Navigation
 ```
+
+## Phase 1: Foundation (Complete)
+
+Core IRC implementee avec TDD:
+- `TagParser` : IRCv3 message-tags avec escape sequences
+- `IrcParser` / `IrcMessage` : parsing/serialization de messages
+- `SocketManager` : TCP/TLS via SecureSocket
+- `ConnectionStateMachine` : etats disconnected/connecting/registering/connected
+- `IrcCommand` classes : NICK, USER, JOIN, PART, QUIT, PRIVMSG, etc.
+- `NumericHandler` : dispatch des numerics (001-005, 353, 366, 4xx)
 
 ## Conventions
 
