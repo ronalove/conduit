@@ -12,3 +12,4 @@ export 'account_notify_handler.dart';
 export 'chghost_handler.dart';
 export 'setname_handler.dart';
 export 'invite_notify_handler.dart';
+export 'monitor_handler.dart';

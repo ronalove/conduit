@@ -8,3 +8,4 @@ export 'message_commands.dart';
 export 'connection_commands.dart';
 export 'capability_commands.dart';
 export 'presence_commands.dart';
+export 'monitor_commands.dart';
