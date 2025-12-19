@@ -7,3 +7,4 @@ export 'channel_commands.dart';
 export 'message_commands.dart';
 export 'connection_commands.dart';
 export 'capability_commands.dart';
+export 'presence_commands.dart';
