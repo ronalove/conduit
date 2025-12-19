@@ -106,6 +106,54 @@ test/core/irc/
     └── labeled_response_handler_test.dart
 ```
 
+## Phase 4: Presence & Users (Complete)
+
+Extensions IRCv3 pour presence et utilisateurs:
+- `AwayCommand` / `AwayNotifyHandler` : away-notify notifications temps reel
+- `AccountNotifyHandler` : account-notify login/logout notifications
+- `MessageTags.hasAccount` / `IrcMessage.hasAccount` : account-tag support
+- `ChghostHandler` : chghost host change notifications
+- `SetnameCommand` / `SetnameHandler` : setname realname change
+- `ExtendedJoinParser` / `ExtendedJoin` : extended-join avec account/realname
+- `InviteNotifyHandler` : invite-notify pour membres du canal
+- `MonitorCommand` / `MonitorHandler` : Monitor user presence tracking
+- `WhoxCommand` / `WhoxParser` : WHOX extended WHO queries
+
+### Fichiers cles Phase 4
+```
+lib/core/irc/
+├── commands/
+│   ├── presence_commands.dart    # AWAY, SETNAME commands
+│   ├── monitor_commands.dart     # MONITOR +/-/C/L/S commands
+│   └── whox_command.dart         # WHO with WHOX fields
+├── parser/
+│   ├── extended_join.dart        # Extended JOIN parsing
+│   └── whox_parser.dart          # WHOX response parsing
+└── protocol/
+    ├── away_notify_handler.dart      # Away status notifications
+    ├── account_notify_handler.dart   # Account change notifications
+    ├── chghost_handler.dart          # Host change notifications
+    ├── setname_handler.dart          # Realname change notifications
+    ├── invite_notify_handler.dart    # Invite notifications
+    └── monitor_handler.dart          # Monitor numerics (730-734)
+
+test/core/irc/
+├── commands/
+│   ├── presence_commands_test.dart
+│   ├── monitor_commands_test.dart
+│   └── whox_command_test.dart
+├── parser/
+│   ├── extended_join_test.dart
+│   └── whox_parser_test.dart
+└── protocol/
+    ├── away_notify_handler_test.dart
+    ├── account_notify_handler_test.dart
+    ├── chghost_handler_test.dart
+    ├── setname_handler_test.dart
+    ├── invite_notify_handler_test.dart
+    └── monitor_handler_test.dart
+```
+
 ## Conventions
 
 ### Code Style
@@ -148,10 +196,19 @@ test/core/irc/
 - multi-prefix (multiple user modes) ✓
 - UTF8ONLY (via ISUPPORT) ✓
 
-### A implementer (Phase 4+)
+### Implementees (Phase 4)
+- away-notify (real-time away status) ✓
+- account-notify (login/logout notifications) ✓
+- account-tag (account on messages) ✓
+- chghost (host change notifications) ✓
+- setname (realname change) ✓
+- extended-join (account/realname in JOIN) ✓
+- invite-notify (invite notifications) ✓
+- Monitor (user presence tracking) ✓
+- WHOX (extended WHO queries) ✓
+
+### A implementer (Phase 5+)
 - batch, chathistory, multiline
-- away-notify, account-notify, account-tag
-- Monitor, WHOX
 - +typing, reply, read-marker
 
 ## References
