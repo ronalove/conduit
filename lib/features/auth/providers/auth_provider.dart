@@ -3,6 +3,12 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../connection/connection.dart';
+import '../services/auth_service.dart';
+
+/// Provider for AuthService.
+final authServiceProvider = Provider<AuthService>((ref) {
+  return AuthService();
+});
 
 /// Authentication status.
 enum AuthStatus {
@@ -127,9 +133,13 @@ class AuthNotifier extends Notifier<AuthState> {
 
       await ref.read(ircSessionProvider.notifier).startSession(config);
 
-      // TODO: Save credentials if rememberMe is true
+      // Save credentials if rememberMe is true
       if (rememberMe) {
-        // Save to secure storage
+        final authService = ref.read(authServiceProvider);
+        await authService.saveCredentials(
+          username: username,
+          password: password,
+        );
       }
     } catch (e) {
       state = state.copyWith(
@@ -139,10 +149,50 @@ class AuthNotifier extends Notifier<AuthState> {
     }
   }
 
+  /// Try to auto-login using stored credentials.
+  ///
+  /// Returns true if auto-login was attempted, false if no credentials stored.
+  Future<bool> tryAutoLogin() async {
+    final authService = ref.read(authServiceProvider);
+    final credentials = await authService.loadCredentials();
+
+    if (credentials == null) {
+      return false;
+    }
+
+    await login(
+      username: credentials.username,
+      password: credentials.password,
+      rememberMe: true, // Keep credentials saved
+    );
+
+    return true;
+  }
+
+  /// Check if stored credentials exist.
+  Future<bool> hasStoredCredentials() async {
+    final authService = ref.read(authServiceProvider);
+    return authService.hasStoredCredentials();
+  }
+
   /// Disconnect from the server.
-  Future<void> logout() async {
+  ///
+  /// If [clearCredentials] is true, also clears stored credentials.
+  Future<void> logout({bool clearCredentials = false}) async {
     await ref.read(ircSessionProvider.notifier).endSession();
+
+    if (clearCredentials) {
+      final authService = ref.read(authServiceProvider);
+      await authService.clearCredentials();
+    }
+
     state = const AuthState();
+  }
+
+  /// Clear stored credentials without disconnecting.
+  Future<void> clearStoredCredentials() async {
+    final authService = ref.read(authServiceProvider);
+    await authService.clearCredentials();
   }
 
   /// Clear error state.

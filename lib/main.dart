@@ -107,12 +107,44 @@ class ConduitApp extends ConsumerWidget {
 }
 
 /// Switches between login screen and main app based on auth state.
-class AuthGate extends ConsumerWidget {
+class AuthGate extends ConsumerStatefulWidget {
   const AuthGate({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AuthGate> createState() => _AuthGateState();
+}
+
+class _AuthGateState extends ConsumerState<AuthGate> {
+  bool _checkingCredentials = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _tryAutoLogin();
+  }
+
+  Future<void> _tryAutoLogin() async {
+    try {
+      await ref.read(authProvider.notifier).tryAutoLogin();
+    } finally {
+      if (mounted) {
+        setState(() => _checkingCredentials = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
+
+    // Show loading while checking stored credentials
+    if (_checkingCredentials) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
 
     if (authState.isAuthenticated) {
       return const LayoutDemo();

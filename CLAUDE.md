@@ -4,6 +4,11 @@
 
 Client IRCv3 multi-plateforme (Windows, macOS, iOS, Android) avec Flutter.
 
+**Conduit est le client dedie au serveur Ronan.** Il n'est pas concu comme un client IRC generique :
+- Un seul serveur preconfigure (pas de configuration d'URL, pas d'ajout de serveurs)
+- L'URL du serveur changera entre dev (IP locale) et prod (IP publique) mais c'est toujours le meme serveur
+- Les credentials utilisateur sont stockes localement avec flutter_secure_storage
+
 ## Stack Technique
 
 - **Framework** : Flutter 3.38+ / Dart 3.10+
@@ -342,6 +347,13 @@ Integration entre le backend IRC et l'UI via Riverpod.
 - Auto-reconnect avec ExponentialBackoffPolicy
 - Entitlements macOS pour connexions reseau
 
+### Issue #58: Authentication Integration (Complete)
+- `AuthService` : stockage securise des credentials (flutter_secure_storage)
+- `authServiceProvider` : provider Riverpod pour AuthService
+- Fonctionnalite "Remember me" dans login
+- Auto-login au demarrage si credentials sauvegardes
+- `tryAutoLogin()` / `hasStoredCredentials()` / `clearStoredCredentials()`
+
 ### Fichiers cles Phase 8
 ```
 lib/features/connection/
@@ -352,10 +364,25 @@ lib/features/connection/
 │   └── irc_session_manager.dart   # CAP/SASL/registration flow
 └── connection.dart                # Barrel export
 
+lib/features/auth/
+├── providers/
+│   └── auth_provider.dart         # Auth state + auto-login
+├── services/
+│   └── auth_service.dart          # Secure credential storage
+└── screens/
+    └── login_screen.dart          # Login UI
+
 macos/Runner/
-├── DebugProfile.entitlements      # +network.client
-└── Release.entitlements           # +network.client
+├── DebugProfile.entitlements      # +network.client, +keychain-access-groups
+├── Release.entitlements           # +network.client, +keychain-access-groups
+└── Configs/
+    └── AppInfo.xcconfig           # Bundle ID: lol.ronan.conduit
 ```
+
+### Configuration macOS
+- **Bundle Identifier** : `lol.ronan.conduit`
+- **Signing** : Requires Apple Developer account (free personal team OK)
+- **Entitlements** : app-sandbox, network.client, keychain-access-groups
 
 ### Compte de test
 - Username: `conduit`
