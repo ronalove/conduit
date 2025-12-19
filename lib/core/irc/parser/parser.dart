@@ -11,3 +11,4 @@ export 'irc_message_extensions.dart';
 export 'standard_replies.dart';
 export 'user_prefix.dart';
 export 'isupport.dart';
+export 'extended_join.dart';
