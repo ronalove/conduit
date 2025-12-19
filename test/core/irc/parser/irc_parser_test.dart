@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:conduit/core/irc/parser/irc_parser.dart';
 import 'package:conduit/core/irc/parser/irc_message.dart';
-import 'package:conduit/core/irc/parser/source_parser.dart';
 
 void main() {
   group('IrcParser', () {
