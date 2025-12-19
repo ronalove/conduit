@@ -235,4 +235,37 @@ void main() {
       expect(result['+draft/reply'], equals('targetmsg123'));
     });
   });
+
+  group('MessageTags.withAccount', () {
+    test('adds account tag', () {
+      final original = <String, String?>{};
+      final result = MessageTags.withAccount(original, 'myaccount');
+
+      expect(result['account'], equals('myaccount'));
+    });
+
+    test('adds empty account tag for non-logged in user', () {
+      final original = <String, String?>{};
+      final result = MessageTags.withAccount(original, '');
+
+      expect(result['account'], equals(''));
+    });
+  });
+
+  group('MessageTags.hasAccount', () {
+    test('returns true when account tag has value', () {
+      final tags = {'account': 'user123'};
+      expect(MessageTags.hasAccount(tags), isTrue);
+    });
+
+    test('returns false when account tag is empty', () {
+      final tags = {'account': ''};
+      expect(MessageTags.hasAccount(tags), isFalse);
+    });
+
+    test('returns false when account tag is missing', () {
+      final tags = <String, String?>{};
+      expect(MessageTags.hasAccount(tags), isFalse);
+    });
+  });
 }

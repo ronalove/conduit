@@ -41,6 +41,17 @@ extension IrcMessageTagsExtension on IrcMessage {
   /// Whether this message is a reply to another message.
   bool get isReply => tags.containsKey(IrcTags.replyTo);
 
+  /// Whether the sender has an account (is logged in).
+  ///
+  /// Returns true if account tag exists and is not empty.
+  bool get hasAccount => MessageTags.hasAccount(tags);
+
+  /// Whether the account tag indicates user is not logged in.
+  ///
+  /// Returns true if account tag exists but is empty.
+  bool get isAnonymousSender =>
+      tags.containsKey(IrcTags.account) && tags[IrcTags.account] == '';
+
   /// Creates a copy of this message with additional tags.
   IrcMessage withTags(Map<String, String?> additionalTags) {
     return IrcMessage(

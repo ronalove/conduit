@@ -124,6 +124,38 @@ void main() {
         expect(labeled.isLabeledResponse, isTrue);
         expect(unlabeled.isLabeledResponse, isFalse);
       });
+
+      test('hasAccount returns true when account tag has value', () {
+        final withAccount = IrcMessage(
+          tags: {'account': 'user123'},
+          command: 'PRIVMSG',
+        );
+        final emptyAccount = IrcMessage(
+          tags: {'account': ''},
+          command: 'PRIVMSG',
+        );
+        final noAccount = IrcMessage(command: 'PRIVMSG');
+
+        expect(withAccount.hasAccount, isTrue);
+        expect(emptyAccount.hasAccount, isFalse);
+        expect(noAccount.hasAccount, isFalse);
+      });
+
+      test('isAnonymousSender returns true when account tag is empty', () {
+        final withAccount = IrcMessage(
+          tags: {'account': 'user123'},
+          command: 'PRIVMSG',
+        );
+        final emptyAccount = IrcMessage(
+          tags: {'account': ''},
+          command: 'PRIVMSG',
+        );
+        final noAccount = IrcMessage(command: 'PRIVMSG');
+
+        expect(withAccount.isAnonymousSender, isFalse);
+        expect(emptyAccount.isAnonymousSender, isTrue);
+        expect(noAccount.isAnonymousSender, isFalse);
+      });
     });
 
     group('reply handling', () {

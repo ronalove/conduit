@@ -183,4 +183,25 @@ abstract class MessageTags {
       IrcTags.replyTo: targetMsgId,
     };
   }
+
+  /// Creates a tag map with an account tag.
+  ///
+  /// Use empty string to indicate user is not logged in.
+  static Map<String, String?> withAccount(
+    Map<String, String?> tags,
+    String account,
+  ) {
+    return {
+      ...tags,
+      IrcTags.account: account,
+    };
+  }
+
+  /// Checks if the sender has an account (is logged in).
+  ///
+  /// Returns true if account tag exists and is not empty.
+  static bool hasAccount(Map<String, String?> tags) {
+    final account = tags[IrcTags.account];
+    return account != null && account.isNotEmpty;
+  }
 }
