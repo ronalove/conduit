@@ -7,9 +7,8 @@ Client IRCv3 multi-plateforme (Windows, macOS, iOS, Android) developpé avec Flu
 | Parametre | Valeur |
 |-----------|--------|
 | Serveur | Ergo (Oragono) |
-| Connexion | TLS obligatoire |
+| Connexion | TLS |
 | SASL | PLAIN over TLS |
-| Theme | Dark uniquement |
 | Flutter | 3.38+ |
 | Dart | 3.10+ |
 
@@ -19,11 +18,6 @@ Client IRCv3 multi-plateforme (Windows, macOS, iOS, Android) developpé avec Flu
 - macOS
 - iOS
 - Android
-
-## Layouts
-
-- **Desktop** : Landscape (3 colonnes - sidebar channels, chat, sidebar users)
-- **Mobile** : Portrait (navigation bottom/drawer)
 
 ## Documentation
 
@@ -49,36 +43,6 @@ flutter pub get
 
 # Lancer l'application
 flutter run
-```
-
-### Structure du projet
-
-```
-lib/
-├── core/
-│   ├── irc/                    # Client IRC
-│   │   ├── connection/         # TCP/TLS socket
-│   │   ├── parser/             # Message parser
-│   │   ├── protocol/           # IRCv3 extensions
-│   │   │   ├── cap/            # CAP negotiation
-│   │   │   ├── sasl/           # SASL auth
-│   │   │   ├── batch/          # Batch processing
-│   │   │   └── extensions/     # IRCv3 features
-│   │   ├── commands/           # IRC commands
-│   │   └── state/              # Connection state
-│   ├── models/                 # Data models
-│   ├── constants/              # IRC numerics, commands
-│   └── utils/                  # Helpers
-├── features/
-│   ├── auth/                   # Authentication
-│   ├── chat/                   # Chat views
-│   ├── channels/               # Channel management
-│   ├── users/                  # User profiles
-│   └── settings/               # Settings
-├── services/                   # Storage, notifications
-├── theme/                      # Dark theme
-├── layouts/                    # Adaptive layouts
-└── routing/                    # Navigation
 ```
 
 ## Features IRCv3 Supportees

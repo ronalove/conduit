@@ -70,6 +70,42 @@ integration_test/
 └── sts_test.dart                  # STS policy tests
 ```
 
+## Phase 3: Extensions Core (Complete)
+
+IRCv3 extensions et utilitaires:
+- `MessageTags` / `IrcTags` : utilitaires pour tags standard (time, msgid, account, batch, label)
+- `IrcMessageExtensions` : extensions sur IrcMessage pour acces aux tags
+- `EchoMessageHandler` : echo-message avec tracking des messages pending
+- `LabeledResponseHandler` : correlation request/response avec labels
+- `StandardReplyParser` / `StandardReply` : parsing FAIL/WARN/NOTE
+- `UserPrefixParser` / `PrefixedUser` : multi-prefix pour modes utilisateur
+- `IsupportParser` / `Isupport` : parsing ISUPPORT (005) avec UTF8ONLY
+
+### Fichiers cles Phase 3
+```
+lib/core/irc/
+├── parser/
+│   ├── message_tags.dart          # IrcTags constants, MessageTags utils
+│   ├── irc_message_extensions.dart # Extensions on IrcMessage
+│   ├── standard_replies.dart      # FAIL/WARN/NOTE parsing
+│   ├── user_prefix.dart           # Multi-prefix, PrefixedUser
+│   └── isupport.dart              # ISUPPORT parsing, UTF8ONLY
+└── protocol/
+    ├── echo_message_handler.dart  # Echo-message tracking
+    └── labeled_response_handler.dart # Request/response correlation
+
+test/core/irc/
+├── parser/
+│   ├── message_tags_test.dart
+│   ├── irc_message_extensions_test.dart
+│   ├── standard_replies_test.dart
+│   ├── user_prefix_test.dart
+│   └── isupport_test.dart
+└── protocol/
+    ├── echo_message_handler_test.dart
+    └── labeled_response_handler_test.dart
+```
+
 ## Conventions
 
 ### Code Style
@@ -102,9 +138,17 @@ integration_test/
 - SASL v3.2 (PLAIN) ✓
 - STS (Strict Transport Security) ✓
 
-### A implementer (Phase 3+)
-- message-tags, msgid, server-time
-- echo-message, labeled-response
+### Implementees (Phase 3)
+- message-tags (full tag support) ✓
+- msgid (message ID) ✓
+- server-time (ISO 8601 timestamps) ✓
+- echo-message (message echo tracking) ✓
+- labeled-response (request/response correlation) ✓
+- standard-replies (FAIL/WARN/NOTE) ✓
+- multi-prefix (multiple user modes) ✓
+- UTF8ONLY (via ISUPPORT) ✓
+
+### A implementer (Phase 4+)
 - batch, chathistory, multiline
 - away-notify, account-notify, account-tag
 - Monitor, WHOX
