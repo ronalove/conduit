@@ -1,82 +1,47 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'features/auth/auth.dart';
 import 'features/channels/channels.dart';
 import 'features/chat/chat.dart';
+import 'features/chat/providers/messages_provider.dart';
 import 'features/connection/connection.dart';
 import 'features/settings/settings.dart';
+import 'features/settings/providers/window_geometry_provider.dart';
 import 'features/users/users.dart';
 import 'layouts/layouts.dart';
 import 'theme/theme.dart';
 
-/// Sample messages for demo (temporary until message provider is implemented).
-final _sampleMessages = [
-  ChatMessage(
-    id: '1',
-    sender: 'alice',
-    content: 'Hello everyone!',
-    timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
-  ),
-  ChatMessage(
-    id: '2',
-    sender: 'bob',
-    content: 'Hey alice, how are you?',
-    timestamp: DateTime.now().subtract(const Duration(minutes: 29)),
-  ),
-  ChatMessage(
-    id: '3',
-    sender: 'alice',
-    content: "I'm doing great, thanks for asking!",
-    timestamp: DateTime.now().subtract(const Duration(minutes: 28)),
-  ),
-  ChatMessage(
-    id: '4',
-    sender: 'charlie',
-    content: 'charlie has joined the channel',
-    timestamp: DateTime.now().subtract(const Duration(minutes: 20)),
-    type: MessageType.event,
-  ),
-  ChatMessage(
-    id: '5',
-    sender: 'charlie',
-    content: 'waves at everyone',
-    timestamp: DateTime.now().subtract(const Duration(minutes: 19)),
-    isAction: true,
-  ),
-  ChatMessage(
-    id: '6',
-    sender: 'server',
-    content: 'Welcome to Conduit IRC client demo.',
-    timestamp: DateTime.now().subtract(const Duration(minutes: 15)),
-    type: MessageType.notice,
-  ),
-  ChatMessage(
-    id: '7',
-    sender: 'david',
-    content: 'Has anyone tried the new Flutter 3.38?',
-    timestamp: DateTime.now().subtract(const Duration(minutes: 10)),
-  ),
-  ChatMessage(
-    id: '8',
-    sender: 'eve',
-    content: 'Yes! The performance improvements are amazing.',
-    timestamp: DateTime.now().subtract(const Duration(minutes: 8)),
-  ),
-  ChatMessage(
-    id: '9',
-    sender: 'alice',
-    content: 'I love the new Dart 3.10 features too!',
-    timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
-  ),
-];
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
   runApp(
     const ProviderScope(
       child: ConduitApp(),
     ),
   );
+
+  // Configure window on desktop platforms
+  if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
+    doWhenWindowReady(() async {
+      final geometry = await WindowGeometryNotifier.loadFromPrefs();
+
+      appWindow.minSize = const Size(800, 600);
+      appWindow.size = Size(geometry.width, geometry.height);
+
+      if (geometry.x != null && geometry.y != null) {
+        appWindow.position = Offset(geometry.x!, geometry.y!);
+      } else {
+        appWindow.alignment = Alignment.center;
+      }
+
+      appWindow.show();
+    });
+  }
 }
 
 class ConduitApp extends ConsumerWidget {
@@ -90,7 +55,81 @@ class ConduitApp extends ConsumerWidget {
       title: 'Conduit',
       debugShowCheckedModeBanner: false,
       theme: themeState.themeData,
-      home: const AuthGate(),
+      home: const _DesktopWrapper(child: AuthGate()),
+    );
+  }
+}
+
+/// Wrapper that adds the custom title bar on desktop platforms.
+class _DesktopWrapper extends ConsumerStatefulWidget {
+  const _DesktopWrapper({required this.child});
+
+  final Widget child;
+
+  @override
+  ConsumerState<_DesktopWrapper> createState() => _DesktopWrapperState();
+}
+
+class _DesktopWrapperState extends ConsumerState<_DesktopWrapper>
+    with WidgetsBindingObserver {
+  Timer? _saveTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
+    // Periodically save window geometry on desktop
+    if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
+      _saveTimer = Timer.periodic(const Duration(seconds: 2), (_) {
+        _saveGeometry();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _saveTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Save geometry when app goes to background or is closing
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
+      _saveGeometry();
+    }
+  }
+
+  void _saveGeometry() {
+    if (!Platform.isMacOS && !Platform.isWindows && !Platform.isLinux) return;
+
+    final position = appWindow.position;
+    final size = appWindow.size;
+
+    ref.read(windowGeometryProvider.notifier).saveGeometry(
+          x: position.dx,
+          y: position.dy,
+          width: size.width,
+          height: size.height,
+        );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // On mobile, just return the child
+    if (!Platform.isMacOS && !Platform.isWindows && !Platform.isLinux) {
+      return widget.child;
+    }
+
+    // On desktop, wrap with title bar
+    return Column(
+      children: [
+        const WindowTitleBar(),
+        Expanded(child: widget.child),
+      ],
     );
   }
 }
@@ -161,10 +200,19 @@ class _LayoutDemoState extends ConsumerState<LayoutDemo> {
     final selectedChannel = ref.watch(selectedChannelProvider);
     final session = ref.watch(ircSessionProvider);
     final channelsNotifier = ref.read(channelsProvider.notifier);
+    final messagesNotifier = ref.read(messagesProvider.notifier);
+
+    // Watch messages for selected channel
+    final messagesState = ref.watch(currentChannelMessagesProvider);
 
     // Get selected channel name
     final selectedChannelName = selectedChannel?.name;
     final selectedTopic = selectedChannel?.topicText;
+
+    // Load messages when channel is selected
+    if (selectedChannelName != null && messagesState == null) {
+      Future.microtask(() => messagesNotifier.loadChannelMessages(selectedChannelName));
+    }
 
     // Get server name from session or config
     final serverName = session.serverName ?? 'Ronan';
@@ -195,6 +243,7 @@ class _LayoutDemoState extends ConsumerState<LayoutDemo> {
                     if (type == ChannelType.channel) {
                       channelsNotifier.selectChannel(name);
                       channelsNotifier.markAsRead(name);
+                      messagesNotifier.markChannelAsRead(name);
                     }
                   },
                   onLeaveChannel: (name) {
@@ -225,12 +274,18 @@ class _LayoutDemoState extends ConsumerState<LayoutDemo> {
           chatArea: ChatScreen(
             channelName: selectedChannelName ?? 'No channel selected',
             topic: selectedTopic,
-            messages: _sampleMessages, // TODO: connect to messages provider
+            messages: messagesState?.messages ?? [],
+            isLoadingHistory: messagesState?.isLoadingHistory ?? false,
             typingUsers: const [], // TODO: connect to typing provider
             showHeader: false,
             onSendMessage: (msg) {
-              // TODO: send message via IRC
+              if (selectedChannelName != null) {
+                messagesNotifier.sendMessage(selectedChannelName, msg);
+              }
             },
+            onLoadMore: selectedChannelName != null
+                ? () => messagesNotifier.loadMoreHistory(selectedChannelName)
+                : null,
           ),
           usersSidebar: UserList(
             users: selectedChannel?.sortedUsers ?? [],
@@ -310,10 +365,19 @@ class _MobilePlaceholder extends ConsumerWidget {
     final selectedChannel = ref.watch(selectedChannelProvider);
     final session = ref.watch(ircSessionProvider);
     final channelsNotifier = ref.read(channelsProvider.notifier);
+    final messagesNotifier = ref.read(messagesProvider.notifier);
+
+    // Watch messages for selected channel
+    final messagesState = ref.watch(currentChannelMessagesProvider);
 
     final selectedChannelName = selectedChannel?.name;
     final selectedTopic = selectedChannel?.topicText;
     final serverName = session.serverName ?? 'Ronan';
+
+    // Load messages when channel is selected
+    if (selectedChannelName != null && messagesState == null) {
+      Future.microtask(() => messagesNotifier.loadChannelMessages(selectedChannelName));
+    }
 
     return MobileLayout(
       channelsPage: ChannelListScreen(
@@ -325,6 +389,7 @@ class _MobilePlaceholder extends ConsumerWidget {
           if (type == ChannelType.channel) {
             channelsNotifier.selectChannel(name);
             channelsNotifier.markAsRead(name);
+            messagesNotifier.markChannelAsRead(name);
           }
         },
         onLeaveChannel: (name) {
@@ -340,14 +405,20 @@ class _MobilePlaceholder extends ConsumerWidget {
       chatPage: ChatScreen(
         channelName: selectedChannelName ?? 'No channel selected',
         topic: selectedTopic,
-        messages: _sampleMessages, // TODO: connect to messages provider
+        messages: messagesState?.messages ?? [],
+        isLoadingHistory: messagesState?.isLoadingHistory ?? false,
         typingUsers: const [], // TODO: connect to typing provider
         showHeader: true,
         onBack: () {},
         onShowUsers: () {},
         onSendMessage: (msg) {
-          // TODO: send message via IRC
+          if (selectedChannelName != null) {
+            messagesNotifier.sendMessage(selectedChannelName, msg);
+          }
         },
+        onLoadMore: selectedChannelName != null
+            ? () => messagesNotifier.loadMoreHistory(selectedChannelName)
+            : null,
       ),
       usersPage: UserList(
         users: selectedChannel?.sortedUsers ?? [],

@@ -82,8 +82,17 @@ This project uses build_runner with:
 - **freezed**: Immutable data models (`.freezed.dart`)
 - **json_serializable**: JSON serialization (`.g.dart`)
 - **riverpod_generator**: Type-safe providers (`.g.dart`)
+- **drift**: SQLite database code (`.g.dart`)
 
 Always run `flutter pub run build_runner build` after modifying annotated classes.
+
+## Database
+
+Uses **drift** (SQLite ORM) for message persistence:
+- `lib/core/database/tables.dart`: Table definitions (Messages, ChannelReadStates)
+- `lib/core/database/database.dart`: AppDatabase with CRUD operations
+- 90-day message retention policy
+- Event messages (JOIN/PART/QUIT) are in-memory only, not persisted
 
 ## Key Files
 
@@ -91,6 +100,8 @@ Always run `flutter pub run build_runner build` after modifying annotated classe
 - `lib/core/irc/protocol/protocol.dart`: Main IRC protocol orchestrator
 - `lib/core/irc/state/connection_state_machine.dart`: Connection lifecycle
 - `lib/core/constants/irc_numerics.dart`: IRC numeric reply codes
+- `lib/core/database/database.dart`: SQLite database for messages
+- `lib/features/chat/providers/messages_provider.dart`: Message state management
 - `lib/routing/`: go_router navigation setup
 
 ## IRCv3 Capabilities Implemented

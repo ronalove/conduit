@@ -2,6 +2,8 @@
 library;
 
 export 'models/chat_message.dart';
+export 'models/messages_state.dart';
+export 'providers/messages_provider.dart';
 export 'screens/chat_screen.dart';
 export 'widgets/message_bubble.dart';
 export 'widgets/message_input.dart';
