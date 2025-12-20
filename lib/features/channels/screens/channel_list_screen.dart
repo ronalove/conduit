@@ -14,6 +14,7 @@ class ChannelListScreen extends StatelessWidget {
     this.onChannelLongPress,
     this.onLeaveChannel,
     this.onAddChannel,
+    this.onBrowseChannels,
     this.showServerStatus = true,
     this.serverName,
   });
@@ -38,6 +39,9 @@ class ChannelListScreen extends StatelessWidget {
 
   /// Called when add channel button is pressed.
   final VoidCallback? onAddChannel;
+
+  /// Called when browse channels button is pressed.
+  final VoidCallback? onBrowseChannels;
 
   /// Whether to show server status at top.
   final bool showServerStatus;
@@ -144,6 +148,12 @@ class ChannelListScreen extends StatelessWidget {
               style: AppTextStyles.headlineMedium,
             ),
           ),
+          if (onBrowseChannels != null)
+            IconButton(
+              icon: const Icon(Icons.list, size: 22),
+              onPressed: onBrowseChannels,
+              tooltip: 'Browse channels',
+            ),
           if (onAddChannel != null)
             IconButton(
               icon: const Icon(Icons.add, size: 22),

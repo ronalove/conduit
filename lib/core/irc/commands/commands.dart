@@ -16,3 +16,4 @@ export 'read_marker_commands.dart';
 export 'typing_commands.dart';
 export 'reply_commands.dart';
 export 'channel_context_commands.dart';
+export 'list_command.dart';

@@ -4,24 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'features/auth/auth.dart';
 import 'features/channels/channels.dart';
 import 'features/chat/chat.dart';
+import 'features/connection/connection.dart';
 import 'features/settings/settings.dart';
 import 'features/users/users.dart';
 import 'layouts/layouts.dart';
 import 'theme/theme.dart';
 
-/// Sample users for demo.
-final _sampleUsers = [
-  const ChannelUser(nickname: 'alice', mode: UserMode.operator),
-  const ChannelUser(nickname: 'bob', mode: UserMode.voice),
-  const ChannelUser(nickname: 'charlie'),
-  const ChannelUser(nickname: 'david'),
-  const ChannelUser(nickname: 'eve', isAway: true, awayMessage: 'Be right back'),
-  const ChannelUser(nickname: 'frank', mode: UserMode.halfOp),
-  const ChannelUser(nickname: 'grace'),
-  const ChannelUser(nickname: 'henry', isAway: true),
-];
-
-/// Sample messages for demo.
+/// Sample messages for demo (temporary until message provider is implemented).
 final _sampleMessages = [
   ChatMessage(
     id: '1',
@@ -154,19 +143,32 @@ class _AuthGateState extends ConsumerState<AuthGate> {
   }
 }
 
-/// Demo page showing adaptive layouts.
-class LayoutDemo extends StatefulWidget {
+/// Main app layout with real IRC data.
+class LayoutDemo extends ConsumerStatefulWidget {
   const LayoutDemo({super.key});
 
   @override
-  State<LayoutDemo> createState() => _LayoutDemoState();
+  ConsumerState<LayoutDemo> createState() => _LayoutDemoState();
 }
 
-class _LayoutDemoState extends State<LayoutDemo> {
+class _LayoutDemoState extends ConsumerState<LayoutDemo> {
   bool _showSettings = false;
 
   @override
   Widget build(BuildContext context) {
+    // Watch channel providers
+    final channels = ref.watch(channelListProvider);
+    final selectedChannel = ref.watch(selectedChannelProvider);
+    final session = ref.watch(ircSessionProvider);
+    final channelsNotifier = ref.read(channelsProvider.notifier);
+
+    // Get selected channel name
+    final selectedChannelName = selectedChannel?.name;
+    final selectedTopic = selectedChannel?.topicText;
+
+    // Get server name from session or config
+    final serverName = session.serverName ?? 'Ronan';
+
     // Show settings screen
     if (_showSettings) {
       return SettingsScreen(
@@ -185,21 +187,25 @@ class _LayoutDemoState extends State<LayoutDemo> {
             children: [
               Expanded(
                 child: ChannelListScreen(
-                  channels: const [
-                    ChannelInfo(name: '#general', topic: 'General discussion'),
-                    ChannelInfo(name: '#random', unreadCount: 3),
-                    ChannelInfo(name: '#dev', topic: 'Development', hasMention: true),
-                    ChannelInfo(name: '#help'),
-                    ChannelInfo(name: '#off-topic', unreadCount: 12),
-                  ],
-                  privateMessages: const [
-                    PrivateMessageInfo(nickname: 'alice', unreadCount: 2),
-                    PrivateMessageInfo(nickname: 'bob', isAway: true),
-                  ],
-                  selectedChannel: '#general',
-                  serverName: 'irc.example.com',
-                  onChannelTap: (name, type) {},
-                  onAddChannel: () {},
+                  channels: channels,
+                  privateMessages: const [], // TODO: implement DMs
+                  selectedChannel: selectedChannelName,
+                  serverName: serverName,
+                  onChannelTap: (name, type) {
+                    if (type == ChannelType.channel) {
+                      channelsNotifier.selectChannel(name);
+                      channelsNotifier.markAsRead(name);
+                    }
+                  },
+                  onLeaveChannel: (name) {
+                    channelsNotifier.partChannel(name);
+                  },
+                  onBrowseChannels: () {
+                    _showBrowseChannelsDialog(context);
+                  },
+                  onAddChannel: () {
+                    _showJoinChannelDialog(context);
+                  },
                 ),
               ),
               // Settings button at bottom of sidebar
@@ -217,15 +223,17 @@ class _LayoutDemoState extends State<LayoutDemo> {
             ],
           ),
           chatArea: ChatScreen(
-            channelName: '#general',
-            topic: 'General discussion',
-            messages: _sampleMessages,
-            typingUsers: const ['alice', 'bob'],
+            channelName: selectedChannelName ?? 'No channel selected',
+            topic: selectedTopic,
+            messages: _sampleMessages, // TODO: connect to messages provider
+            typingUsers: const [], // TODO: connect to typing provider
             showHeader: false,
-            onSendMessage: (msg) {},
+            onSendMessage: (msg) {
+              // TODO: send message via IRC
+            },
           ),
           usersSidebar: UserList(
-            users: _sampleUsers,
+            users: selectedChannel?.sortedUsers ?? [],
             onUserTap: (user) {},
             onUserLongPress: (user) {},
           ),
@@ -233,9 +241,62 @@ class _LayoutDemoState extends State<LayoutDemo> {
       ),
     );
   }
+
+  void _showJoinChannelDialog(BuildContext context) {
+    final controller = TextEditingController();
+    final channelsNotifier = ref.read(channelsProvider.notifier);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Join Channel'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: '#channel',
+            labelText: 'Channel name',
+          ),
+          onSubmitted: (value) {
+            if (value.isNotEmpty) {
+              final channel = value.startsWith('#') ? value : '#$value';
+              channelsNotifier.joinChannel(channel);
+              Navigator.of(context).pop();
+            }
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final value = controller.text;
+              if (value.isNotEmpty) {
+                final channel = value.startsWith('#') ? value : '#$value';
+                channelsNotifier.joinChannel(channel);
+                Navigator.of(context).pop();
+              }
+            },
+            child: const Text('Join'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showBrowseChannelsDialog(BuildContext context) async {
+    final channelsNotifier = ref.read(channelsProvider.notifier);
+
+    final channelName = await ChannelListDialog.show(context);
+    if (channelName != null) {
+      channelsNotifier.joinChannel(channelName);
+    }
+  }
 }
 
-class _MobilePlaceholder extends StatelessWidget {
+class _MobilePlaceholder extends ConsumerWidget {
   const _MobilePlaceholder({
     this.onOpenSettings,
   });
@@ -243,37 +304,53 @@ class _MobilePlaceholder extends StatelessWidget {
   final VoidCallback? onOpenSettings;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Watch channel providers
+    final channels = ref.watch(channelListProvider);
+    final selectedChannel = ref.watch(selectedChannelProvider);
+    final session = ref.watch(ircSessionProvider);
+    final channelsNotifier = ref.read(channelsProvider.notifier);
+
+    final selectedChannelName = selectedChannel?.name;
+    final selectedTopic = selectedChannel?.topicText;
+    final serverName = session.serverName ?? 'Ronan';
+
     return MobileLayout(
       channelsPage: ChannelListScreen(
-        channels: const [
-          ChannelInfo(name: '#general', topic: 'General discussion'),
-          ChannelInfo(name: '#random', unreadCount: 3),
-          ChannelInfo(name: '#dev', topic: 'Development', hasMention: true),
-          ChannelInfo(name: '#help'),
-          ChannelInfo(name: '#off-topic', unreadCount: 12),
-        ],
-        privateMessages: const [
-          PrivateMessageInfo(nickname: 'alice', unreadCount: 2),
-          PrivateMessageInfo(nickname: 'bob', isAway: true),
-        ],
-        selectedChannel: '#general',
-        serverName: 'irc.example.com',
-        onChannelTap: (name, type) {},
-        onAddChannel: () {},
+        channels: channels,
+        privateMessages: const [], // TODO: implement DMs
+        selectedChannel: selectedChannelName,
+        serverName: serverName,
+        onChannelTap: (name, type) {
+          if (type == ChannelType.channel) {
+            channelsNotifier.selectChannel(name);
+            channelsNotifier.markAsRead(name);
+          }
+        },
+        onLeaveChannel: (name) {
+          channelsNotifier.partChannel(name);
+        },
+        onBrowseChannels: () {
+          _showBrowseChannelsDialog(context, ref);
+        },
+        onAddChannel: () {
+          _showJoinChannelDialog(context, ref);
+        },
       ),
       chatPage: ChatScreen(
-        channelName: '#general',
-        topic: 'General discussion',
-        messages: _sampleMessages,
-        typingUsers: const ['alice'],
+        channelName: selectedChannelName ?? 'No channel selected',
+        topic: selectedTopic,
+        messages: _sampleMessages, // TODO: connect to messages provider
+        typingUsers: const [], // TODO: connect to typing provider
         showHeader: true,
         onBack: () {},
         onShowUsers: () {},
-        onSendMessage: (msg) {},
+        onSendMessage: (msg) {
+          // TODO: send message via IRC
+        },
       ),
       usersPage: UserList(
-        users: _sampleUsers,
+        users: selectedChannel?.sortedUsers ?? [],
         onUserTap: (user) {},
         onUserLongPress: (user) {},
       ),
@@ -281,6 +358,59 @@ class _MobilePlaceholder extends StatelessWidget {
         onBack: onOpenSettings,
       ),
     );
+  }
+
+  void _showJoinChannelDialog(BuildContext context, WidgetRef ref) {
+    final controller = TextEditingController();
+    final channelsNotifier = ref.read(channelsProvider.notifier);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Join Channel'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: '#channel',
+            labelText: 'Channel name',
+          ),
+          onSubmitted: (value) {
+            if (value.isNotEmpty) {
+              final channel = value.startsWith('#') ? value : '#$value';
+              channelsNotifier.joinChannel(channel);
+              Navigator.of(context).pop();
+            }
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final value = controller.text;
+              if (value.isNotEmpty) {
+                final channel = value.startsWith('#') ? value : '#$value';
+                channelsNotifier.joinChannel(channel);
+                Navigator.of(context).pop();
+              }
+            },
+            child: const Text('Join'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showBrowseChannelsDialog(BuildContext context, WidgetRef ref) async {
+    final channelsNotifier = ref.read(channelsProvider.notifier);
+
+    final channelName = await ChannelListDialog.show(context);
+    if (channelName != null) {
+      channelsNotifier.joinChannel(channelName);
+    }
   }
 }
 
