@@ -388,6 +388,45 @@ macos/Runner/
 - Username: `conduit`
 - Password: `conduit123`
 
+### Issue #59: Channel Integration (Complete)
+- `NamesHandler` : handler pour NAMES (353/366) avec user mode parsing
+- `TopicHandler` : handler pour TOPIC (331/332/333/TOPIC)
+- `ListCommand` : commande IRC LIST avec filtres
+- `ListHandler` : handler pour LIST (321/322/323)
+- `Channel` model : gestion topic, users, unread count
+- `ChannelsProvider` : state management Riverpod pour canaux
+- `ChannelListDialog` : UI pour parcourir les canaux du serveur
+- Integration UI avec providers (channels, selection, users)
+
+### Fichiers cles Issue #59
+```
+lib/core/irc/
+├── commands/
+│   └── list_command.dart            # LIST command
+└── protocol/
+    ├── names_handler.dart           # NAMES 353/366 handling
+    ├── topic_handler.dart           # TOPIC 331/332/333 handling
+    └── list_handler.dart            # LIST 321/322/323 handling
+
+lib/features/channels/
+├── models/
+│   └── channel.dart                 # Channel, ChannelTopic models
+├── providers/
+│   └── channels_provider.dart       # ChannelsNotifier, channelListProvider
+├── screens/
+│   └── channel_list_screen.dart     # Updated with onBrowseChannels
+└── widgets/
+    └── channel_list_dialog.dart     # Browse channels dialog
+
+test/core/irc/
+├── commands/
+│   └── list_command_test.dart
+└── protocol/
+    ├── names_handler_test.dart
+    ├── topic_handler_test.dart
+    └── list_handler_test.dart
+```
+
 ## References
 
 - IRCv3 Specs : https://ircv3.net/irc/
