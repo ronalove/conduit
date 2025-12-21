@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.5 (2025-12-21)
+
+- Refactorisation de la documentation
+- Mise à jour des icônes de l'application avec flutter_launcher_icons
+- Amélioration du workflow de release avec extraction automatique des notes de CHANGELOG et génération du corps de la release avec tableau de téléchargement
+
 ## v0.1.4 (2025-12-21)
 
 - Amélioration du workflow de release avec extraction automatique des notes de CHANGELOG
