@@ -5,28 +5,28 @@
 <h1 align="center">Knights Network</h1>
 
 <p align="center">
-  Client IRC moderne et securise pour le reseau Knights
+  Client IRC moderne et sécurisé pour le réseau des Knights of Eternity
 </p>
 
 <p align="center">
   <a href="https://github.com/r9r-dev/conduit/releases/latest">
-    <img src="https://img.shields.io/github/v/release/r9r-dev/conduit?style=flat-square&color=blue" alt="Derniere release">
+    <img src="https://img.shields.io/github/v/release/r9r-dev/conduit?style=flat-square&color=blue&cacheSeconds=3600" alt="Dernière release">
   </a>
   <a href="https://github.com/r9r-dev/conduit/actions/workflows/release.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/r9r-dev/conduit/release.yml?style=flat-square&label=build" alt="Statut CI">
+    <img src="https://img.shields.io/github/actions/workflow/status/r9r-dev/conduit/release.yml?style=flat-square&label=build&cacheSeconds=3600" alt="Statut CI">
   </a>
   <a href="https://github.com/r9r-dev/conduit/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/r9r-dev/conduit?style=flat-square" alt="Licence">
+    <img src="https://img.shields.io/github/license/r9r-dev/conduit?style=flat-square&cacheSeconds=3600" alt="Licence">
   </a>
   <a href="https://github.com/r9r-dev/conduit/releases">
-    <img src="https://img.shields.io/github/downloads/r9r-dev/conduit/total?style=flat-square&color=green" alt="Telechargements">
+    <img src="https://img.shields.io/github/downloads/r9r-dev/conduit/total?style=flat-square&color=green&cacheSeconds=3600" alt="Téléchargements">
   </a>
 </p>
 
 <p align="center">
   <a href="#installation">Installation</a> •
-  <a href="#fonctionnalites">Fonctionnalites</a> •
-  <a href="#developpement">Developpement</a> •
+  <a href="#fonctionnalités">Fonctionnalités</a> •
+  <a href="#développement">Développement</a> •
   <a href="docs/USER_MANUAL.md">Documentation</a>
 </p>
 
@@ -38,68 +38,68 @@
 
 &nbsp;
 
-## A propos
+## À propos
 
-Knights Network est un client IRCv3 multi-plateforme developpe avec Flutter. Il est concu specifiquement pour le serveur Knights et offre une experience de chat moderne avec support complet des specifications IRCv3.
+Knights Network est un client IRCv3 multi-plateforme développé avec Flutter. Il est conçu spécifiquement pour le serveur Knights et offre une expérience de chat moderne avec support complet des spécifications IRCv3.
 
-**Caracteristiques principales :**
+**Caractéristiques principales :**
 
-- Interface moderne et reactive
-- Authentification securisee via SASL
+- Interface moderne et réactive
+- Authentification sécurisée via SASL
 - Historique des messages persistant
-- Indicateurs de frappe en temps reel
+- Indicateurs de frappe en temps réel
 - Support multi-plateforme natif
 
 &nbsp;
 
 ## Installation
 
-Telechargez la derniere version pour votre plateforme :
+Téléchargez la dernière version pour votre plateforme :
 
-| Plateforme | Telechargement | Instructions |
+| Plateforme | Téléchargement | Instructions |
 |------------|----------------|--------------|
-| **Android** | [APK](https://github.com/r9r-dev/conduit/releases/latest) | Activer "Sources inconnues" dans les parametres |
-| **macOS** | [DMG](https://github.com/r9r-dev/conduit/releases/latest) | Clic-droit > Ouvrir (application non signee) |
-| **Windows** | [ZIP](https://github.com/r9r-dev/conduit/releases/latest) | Extraire et lancer l'executable |
-| **Linux** | [AppImage](https://github.com/r9r-dev/conduit/releases/latest) | `chmod +x` puis executer |
+| **Android** | [APK](https://github.com/r9r-dev/conduit/releases/latest) | Activer "Sources inconnues" dans les paramètres |
+| **macOS** | [DMG](https://github.com/r9r-dev/conduit/releases/latest) | Clic-droit > Ouvrir (application non signée) |
+| **Windows** | [ZIP](https://github.com/r9r-dev/conduit/releases/latest) | Extraire et lancer l'exécutable |
+| **Linux** | [AppImage](https://github.com/r9r-dev/conduit/releases/latest) | `chmod +x` puis exécuter |
 
 > **iOS** : Disponible prochainement via TestFlight
 
 &nbsp;
 
-## Fonctionnalites
+## Fonctionnalités
 
-### Specifications IRCv3 supportees
+### Spécifications IRCv3 supportées
 
 <details>
 <summary><strong>Core</strong></summary>
 
-- CAP 302 - Negociation de capacites amelioree
-- cap-notify - Notification de changement de capacites
+- CAP 302 - Négociation de capacités améliorée
+- cap-notify - Notification de changement de capacités
 - SASL v3.2 - Authentification PLAIN
 - message-tags - Support complet des tags
 - msgid - Identifiant de message
 - server-time - Horodatage serveur
-- echo-message - Echo des messages
-- labeled-response - Correlation requete/reponse
-- standard-replies - Format de reponse standard
+- echo-message - Écho des messages
+- labeled-response - Corrélation requête/réponse
+- standard-replies - Format de réponse standard
 - multi-prefix - Modes utilisateur multiples
 - UTF8ONLY - Encodage UTF-8
 
 </details>
 
 <details>
-<summary><strong>Presence et utilisateurs</strong></summary>
+<summary><strong>Présence et utilisateurs</strong></summary>
 
 - away-notify - Notification de statut absent
 - account-notify - Notification de changement de compte
 - account-tag - Tag de compte sur les messages
-- chghost - Notification de changement d'hote
-- setname - Changement de nom reel
-- extended-join - Informations JOIN etendues
+- chghost - Notification de changement d'hôte
+- setname - Changement de nom réel
+- extended-join - Informations JOIN étendues
 - invite-notify - Notification d'invitation
-- Monitor - Surveillance de presence
-- WHOX - Requete WHO etendue
+- Monitor - Surveillance de présence
+- WHOX - Requête WHO étendue
 
 </details>
 
@@ -108,7 +108,7 @@ Telechargez la derniere version pour votre plateforme :
 
 - batch - Groupement de messages
 - multiline - Messages multi-lignes
-- chathistory - Recuperation d'historique
+- chathistory - Récupération d'historique
 - read-marker - Suivi de position de lecture
 
 </details>
@@ -117,13 +117,13 @@ Telechargez la derniere version pour votre plateforme :
 <summary><strong>Interactif</strong></summary>
 
 - +typing - Indicateur de frappe
-- reply - Reference de reponse
+- reply - Référence de réponse
 - channel-context - Contexte de canal pour DMs
 
 </details>
 
 <details>
-<summary><strong>Securite</strong></summary>
+<summary><strong>Sécurité</strong></summary>
 
 - sts - Strict Transport Security
 - Connexion TLS obligatoire
@@ -133,24 +133,24 @@ Telechargez la derniere version pour votre plateforme :
 
 &nbsp;
 
-## Developpement
+## Développement
 
-### Prerequis
+### Prérequis
 
 - Flutter 3.38+
 - Dart 3.10+
 
-### Demarrage rapide
+### Démarrage rapide
 
 ```bash
 # Cloner le repository
 git clone https://github.com/r9r-dev/conduit.git
 cd conduit
 
-# Installer les dependances
+# Installer les dépendances
 flutter pub get
 
-# Generer le code (modeles, providers)
+# Générer le code (modèles, providers)
 flutter pub run build_runner build
 
 # Lancer l'application
@@ -160,7 +160,7 @@ flutter run -d macos  # ou windows, linux, ios, android
 ### Commandes utiles
 
 ```bash
-# Mode watch pour la generation de code
+# Mode watch pour la génération de code
 flutter pub run build_runner watch
 
 # Tests unitaires
@@ -174,7 +174,7 @@ flutter analyze
 
 ## Contribuer
 
-Les contributions sont les bienvenues ! Consultez les [issues ouvertes](https://github.com/r9r-dev/conduit/issues) pour voir les taches en cours.
+Les contributions sont les bienvenues ! Consultez les [issues ouvertes](https://github.com/r9r-dev/conduit/issues) pour voir les tâches en cours.
 
 &nbsp;
 
@@ -183,7 +183,7 @@ Les contributions sont les bienvenues ! Consultez les [issues ouvertes](https://
 - [Manuel utilisateur](docs/USER_MANUAL.md)
 - [Roadmap](https://github.com/r9r-dev/conduit/milestones)
 
-### References IRCv3
+### Références IRCv3
 
 - [IRCv3 Specifications](https://ircv3.net/irc/)
 - [Modern IRC Documentation](https://modern.ircdocs.horse)
@@ -192,7 +192,7 @@ Les contributions sont les bienvenues ! Consultez les [issues ouvertes](https://
 
 ## Licence
 
-MIT - Voir le fichier [LICENSE](LICENSE) pour plus de details.
+MIT - Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
 &nbsp;
 
