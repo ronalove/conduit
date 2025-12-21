@@ -1,29 +1,137 @@
-# Knights Network
+<p align="center">
+  <img src="assets/app_icon.png" alt="Knights Network" width="128">
+</p>
 
-Client IRCv3 multi-plateforme (Windows, macOS, iOS, Android) developpe avec Flutter.
+<h1 align="center">Knights Network</h1>
 
-## Configuration
+<p align="center">
+  Client IRC moderne et securise pour le reseau Knights
+</p>
 
-| Parametre | Valeur |
-|-----------|--------|
-| Serveur | Ergo (Oragono) |
-| Connexion | TLS |
-| SASL | PLAIN over TLS |
-| Flutter | 3.38+ |
-| Dart | 3.10+ |
+<p align="center">
+  <a href="https://github.com/r9r-dev/conduit/releases/latest">
+    <img src="https://img.shields.io/github/v/release/r9r-dev/conduit?style=flat-square&color=blue" alt="Derniere release">
+  </a>
+  <a href="https://github.com/r9r-dev/conduit/actions/workflows/release.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/r9r-dev/conduit/release.yml?style=flat-square&label=build" alt="Statut CI">
+  </a>
+  <a href="https://github.com/r9r-dev/conduit/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/r9r-dev/conduit?style=flat-square" alt="Licence">
+  </a>
+  <a href="https://github.com/r9r-dev/conduit/releases">
+    <img src="https://img.shields.io/github/downloads/r9r-dev/conduit/total?style=flat-square&color=green" alt="Telechargements">
+  </a>
+</p>
 
-## Plateformes
+<p align="center">
+  <a href="#installation">Installation</a> •
+  <a href="#fonctionnalites">Fonctionnalites</a> •
+  <a href="#developpement">Developpement</a> •
+  <a href="docs/USER_MANUAL.md">Documentation</a>
+</p>
 
-- Windows
-- macOS
-- Linux
-- iOS
-- Android
+&nbsp;
 
-## Documentation
+<p align="center">
+  <img src="assets/banner.png" alt="Knights Network Preview" width="500">
+</p>
 
-Voir le dossier `docs/` pour la documentation complete :
-- [Manuel utilisateur](docs/USER_MANUAL.md)
+&nbsp;
+
+## A propos
+
+Knights Network est un client IRCv3 multi-plateforme developpe avec Flutter. Il est concu specifiquement pour le serveur Knights et offre une experience de chat moderne avec support complet des specifications IRCv3.
+
+**Caracteristiques principales :**
+
+- Interface moderne et reactive
+- Authentification securisee via SASL
+- Historique des messages persistant
+- Indicateurs de frappe en temps reel
+- Support multi-plateforme natif
+
+&nbsp;
+
+## Installation
+
+Telechargez la derniere version pour votre plateforme :
+
+| Plateforme | Telechargement | Instructions |
+|------------|----------------|--------------|
+| **Android** | [APK](https://github.com/r9r-dev/conduit/releases/latest) | Activer "Sources inconnues" dans les parametres |
+| **macOS** | [DMG](https://github.com/r9r-dev/conduit/releases/latest) | Clic-droit > Ouvrir (application non signee) |
+| **Windows** | [ZIP](https://github.com/r9r-dev/conduit/releases/latest) | Extraire et lancer l'executable |
+| **Linux** | [AppImage](https://github.com/r9r-dev/conduit/releases/latest) | `chmod +x` puis executer |
+
+> **iOS** : Disponible prochainement via TestFlight
+
+&nbsp;
+
+## Fonctionnalites
+
+### Specifications IRCv3 supportees
+
+<details>
+<summary><strong>Core</strong></summary>
+
+- CAP 302 - Negociation de capacites amelioree
+- cap-notify - Notification de changement de capacites
+- SASL v3.2 - Authentification PLAIN
+- message-tags - Support complet des tags
+- msgid - Identifiant de message
+- server-time - Horodatage serveur
+- echo-message - Echo des messages
+- labeled-response - Correlation requete/reponse
+- standard-replies - Format de reponse standard
+- multi-prefix - Modes utilisateur multiples
+- UTF8ONLY - Encodage UTF-8
+
+</details>
+
+<details>
+<summary><strong>Presence et utilisateurs</strong></summary>
+
+- away-notify - Notification de statut absent
+- account-notify - Notification de changement de compte
+- account-tag - Tag de compte sur les messages
+- chghost - Notification de changement d'hote
+- setname - Changement de nom reel
+- extended-join - Informations JOIN etendues
+- invite-notify - Notification d'invitation
+- Monitor - Surveillance de presence
+- WHOX - Requete WHO etendue
+
+</details>
+
+<details>
+<summary><strong>Batch et historique</strong></summary>
+
+- batch - Groupement de messages
+- multiline - Messages multi-lignes
+- chathistory - Recuperation d'historique
+- read-marker - Suivi de position de lecture
+
+</details>
+
+<details>
+<summary><strong>Interactif</strong></summary>
+
+- +typing - Indicateur de frappe
+- reply - Reference de reponse
+- channel-context - Contexte de canal pour DMs
+
+</details>
+
+<details>
+<summary><strong>Securite</strong></summary>
+
+- sts - Strict Transport Security
+- Connexion TLS obligatoire
+- SASL over TLS
+
+</details>
+
+&nbsp;
 
 ## Developpement
 
@@ -32,7 +140,7 @@ Voir le dossier `docs/` pour la documentation complete :
 - Flutter 3.38+
 - Dart 3.10+
 
-### Installation
+### Demarrage rapide
 
 ```bash
 # Cloner le repository
@@ -42,102 +150,52 @@ cd conduit
 # Installer les dependances
 flutter pub get
 
+# Generer le code (modeles, providers)
+flutter pub run build_runner build
+
 # Lancer l'application
-flutter run
+flutter run -d macos  # ou windows, linux, ios, android
 ```
 
-## Releases
-
-Les releases sont automatiquement buildees via GitHub Actions lors d'un push de tag.
-
-### Creer une release
+### Commandes utiles
 
 ```bash
-# Bumper la version et creer le tag
-./scripts/bump_version.sh 1.0.0
+# Mode watch pour la generation de code
+flutter pub run build_runner watch
 
-# Ou manuellement:
-# 1. Modifier version dans pubspec.yaml
-# 2. Commit
-# 3. git tag v1.0.0
-# 4. git push origin main && git push origin v1.0.0
+# Tests unitaires
+flutter test
+
+# Analyse statique
+flutter analyze
 ```
 
-### Artifacts generes
+&nbsp;
 
-| Plateforme | Format | Notes |
-|------------|--------|-------|
-| Android | APK | Installer via "sources inconnues" |
-| macOS | DMG | Clic-droit > Ouvrir (non signe) |
-| Windows | ZIP | Extraire et lancer .exe |
-| Linux | AppImage | `chmod +x` puis executer |
-| iOS | TestFlight | Necessite compte Apple Developer |
+## Contribuer
 
-### Configuration Android Signing (optionnel)
+Les contributions sont les bienvenues ! Consultez les [issues ouvertes](https://github.com/r9r-dev/conduit/issues) pour voir les taches en cours.
 
-Pour signer les APK avec votre propre cle :
+&nbsp;
 
-1. Generer un keystore:
-   ```bash
-   keytool -genkey -v -keystore upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
-   ```
+## Documentation
 
-2. Ajouter les secrets GitHub:
-   - `ANDROID_KEYSTORE_BASE64`: `base64 -i upload-keystore.jks`
-   - `ANDROID_KEY_ALIAS`: `upload`
-   - `ANDROID_KEY_PASSWORD`: votre mot de passe
-   - `ANDROID_STORE_PASSWORD`: votre mot de passe
+- [Manuel utilisateur](docs/USER_MANUAL.md)
+- [Roadmap](https://github.com/r9r-dev/conduit/milestones)
 
-## Features IRCv3 Supportees
+### References IRCv3
 
-### Core
-- [x] CAP 302 - Enhanced Capability Negotiation
-- [x] cap-notify - Capability Change Notification
-- [x] SASL v3.2 - PLAIN Authentication
-- [x] message-tags - Full Tag Support
-- [x] msgid - Message ID Tag
-- [x] server-time - Server Timestamp
-- [x] echo-message - Message Echo
-- [x] labeled-response - Request/Response Correlation
-- [x] standard-replies - Standard Reply Format
-- [x] multi-prefix - Multiple User Modes
-- [x] UTF8ONLY - UTF-8 Enforcement
+- [IRCv3 Specifications](https://ircv3.net/irc/)
+- [Modern IRC Documentation](https://modern.ircdocs.horse)
 
-### Presence & Users
-- [x] away-notify - Away Status Notification
-- [x] account-notify - Account Change Notification
-- [x] account-tag - Account Tag on Messages
-- [x] chghost - Host Change Notification
-- [x] setname - Realname Change
-- [x] extended-join - Extended JOIN Information
-- [x] invite-notify - Invite Notification
-- [x] Monitor - User Presence Monitoring
-- [x] WHOX - Extended WHO Query
+&nbsp;
 
-### Batch & History
-- [x] batch - Batch Message Grouping
-- [x] multiline - Multi-line Messages
-- [x] chathistory - Message History Retrieval
-- [x] read-marker - Read Position Tracking
+## Licence
 
-### Interactive
-- [x] +typing - Typing Indicator
-- [x] reply - Message Reply Reference
-- [x] channel-context - Channel Context for DMs
+MIT - Voir le fichier [LICENSE](LICENSE) pour plus de details.
 
-### Security
-- [x] sts - Strict Transport Security
+&nbsp;
 
-## Roadmap
-
-Voir les [Milestones](https://github.com/r9r-dev/conduit/milestones) pour le suivi du developpement.
-
-## References
-
-### IRCv3 Specifications
-- **IRCv3 Primary Core** : https://modern.ircdocs.horse
-- **IRCv3 Specifications** : https://ircv3.net/irc/
-
-## License
-
-MIT
+<p align="center">
+  <sub>Fait avec Flutter</sub>
+</p>
