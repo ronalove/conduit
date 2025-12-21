@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -359,10 +360,9 @@ class _LayoutDemoState extends ConsumerState<LayoutDemo> {
                       ? () => messagesNotifier.loadMoreHistory(selectedChannelName)
                       : null,
                 ),
-          usersSidebar: UserList(
+          usersSidebar: _UserListWithActions(
             users: selectedChannel?.sortedUsers ?? [],
-            onUserTap: (user) {},
-            onUserLongPress: (user) {},
+            channelName: selectedChannelName,
           ),
         ),
       ),
@@ -528,10 +528,9 @@ class _MobilePlaceholder extends ConsumerWidget {
             ? () => messagesNotifier.loadMoreHistory(selectedChannelName)
             : null,
       ),
-      usersPage: UserList(
+      usersPage: _UserListWithActions(
         users: selectedChannel?.sortedUsers ?? [],
-        onUserTap: (user) {},
-        onUserLongPress: (user) {},
+        channelName: selectedChannelName,
       ),
       settingsPage: SettingsScreen(
         onBack: onOpenSettings,
@@ -590,6 +589,50 @@ class _MobilePlaceholder extends ConsumerWidget {
     if (channelName != null) {
       channelsNotifier.joinChannel(channelName);
     }
+  }
+}
+
+/// UserList widget with integrated context menu actions.
+class _UserListWithActions extends ConsumerWidget {
+  const _UserListWithActions({
+    required this.users,
+    this.channelName,
+  });
+
+  final List<ChannelUser> users;
+  final String? channelName;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return UserList(
+      users: users,
+      onUserTapUp: channelName != null
+          ? (user, details) => UserActionsService.handleUserTap(
+                context: context,
+                ref: ref,
+                user: user,
+                channelName: channelName!,
+                details: details,
+              )
+          : null,
+      onUserSecondaryTap: channelName != null
+          ? (user, details) async {
+              // Convert TapDownDetails to TapUpDetails for the handler
+              final tapUpDetails = TapUpDetails(
+                kind: PointerDeviceKind.mouse,
+                globalPosition: details.globalPosition,
+                localPosition: details.localPosition,
+              );
+              await UserActionsService.handleUserTap(
+                context: context,
+                ref: ref,
+                user: user,
+                channelName: channelName!,
+                details: tapUpDetails,
+              );
+            }
+          : null,
+    );
   }
 }
 

@@ -40,15 +40,22 @@
 
 ## À propos
 
-Knights Network est un client IRCv3 multi-plateforme développé avec Flutter. Il est conçu spécifiquement pour le serveur Knights et offre une expérience de chat moderne avec support complet des spécifications IRCv3.
+Knights Network est un client IRC multi-plateforme. Il est conçu spécifiquement pour la communauté des Chevaliers de l'Éternité et offre une expérience de chat moderne avec support complet des spécifications IRCv3.
 
 **Caractéristiques principales :**
 
-- Interface moderne et réactive
+- Interface moderne Desktop/Mobile
 - Authentification sécurisée via SASL
-- Historique des messages persistant
-- Indicateurs de frappe en temps réel
-- Support multi-plateforme natif
+- Prise en charge des dernières spécifications IRC :
+  - Notifications AFK
+  - Bouncer intégré
+  - Mention "... rédige un message"
+  - Message tags
+  - Messages multi-lignes
+  - Réponses à message
+  - Réactions
+
+Certaines fonctionnalités, plus d'autres seront implémentées dans le futur.
 
 &nbsp;
 

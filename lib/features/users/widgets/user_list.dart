@@ -11,17 +11,26 @@ class UserList extends StatefulWidget {
     required this.users,
     this.onUserTap,
     this.onUserLongPress,
+    this.onUserTapUp,
+    this.onUserSecondaryTap,
     this.showSearch = true,
   });
 
   /// List of users in the channel.
   final List<ChannelUser> users;
 
-  /// Called when a user is tapped.
+  /// Called when a user is tapped (simple callback).
   final void Function(ChannelUser user)? onUserTap;
 
-  /// Called when a user is long pressed.
+  /// Called when a user is long pressed (simple callback).
   final void Function(ChannelUser user)? onUserLongPress;
+
+  /// Called when a user is tapped with position details.
+  /// Use this for showing context menus at the tap position.
+  final void Function(ChannelUser user, TapUpDetails details)? onUserTapUp;
+
+  /// Called when a user is secondary-tapped (right-click on desktop).
+  final void Function(ChannelUser user, TapDownDetails details)? onUserSecondaryTap;
 
   /// Whether to show the search field.
   final bool showSearch;
@@ -89,6 +98,12 @@ class _UserListState extends State<UserList> {
                         user: user,
                         onTap: () => widget.onUserTap?.call(user),
                         onLongPress: () => widget.onUserLongPress?.call(user),
+                        onTapUp: widget.onUserTapUp != null
+                            ? (details) => widget.onUserTapUp!(user, details)
+                            : null,
+                        onSecondaryTapDown: widget.onUserSecondaryTap != null
+                            ? (details) => widget.onUserSecondaryTap!(user, details)
+                            : null,
                       )),
                 ],
             ],
@@ -219,72 +234,80 @@ class UserListTile extends StatelessWidget {
     required this.user,
     this.onTap,
     this.onLongPress,
+    this.onTapUp,
+    this.onSecondaryTapDown,
   });
 
   final ChannelUser user;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
+  final void Function(TapUpDetails)? onTapUp;
+  final void Function(TapDownDetails)? onSecondaryTapDown;
 
   @override
   Widget build(BuildContext context) {
     final color = _getUserColor();
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        onLongPress: onLongPress,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.sm,
-          ),
-          child: Row(
-            children: [
-              // Avatar
-              UserAvatar(
-                nickname: user.nickname,
-                mode: user.mode,
-                isAway: user.isAway,
-                size: AvatarSize.medium,
-              ),
-              AppSpacing.gapMd,
+    return GestureDetector(
+      onTapUp: onTapUp,
+      onSecondaryTapDown: onSecondaryTapDown,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          onLongPress: onLongPress,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
+            child: Row(
+              children: [
+                // Avatar
+                UserAvatar(
+                  nickname: user.nickname,
+                  mode: user.mode,
+                  isAway: user.isAway,
+                  size: AvatarSize.medium,
+                ),
+                AppSpacing.gapMd,
 
-              // Name and status
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      user.nickname,
-                      style: AppTextStyles.nickname.copyWith(
-                        color: user.isAway ? AppColors.textTertiary : color,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (user.isAway && user.awayMessage != null)
+                // Name and status
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
                       Text(
-                        user.awayMessage!,
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.textTertiary,
-                          fontStyle: FontStyle.italic,
+                        user.nickname,
+                        style: AppTextStyles.nickname.copyWith(
+                          color: user.isAway ? AppColors.textTertiary : color,
                         ),
-                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                  ],
+                      if (user.isAway && user.awayMessage != null)
+                        Text(
+                          user.awayMessage!,
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.textTertiary,
+                            fontStyle: FontStyle.italic,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                    ],
+                  ),
                 ),
-              ),
 
-              // Away icon
-              if (user.isAway)
-                const Icon(
-                  Icons.schedule,
-                  size: 16,
-                  color: AppColors.textTertiary,
-                ),
-            ],
+                // Away icon
+                if (user.isAway)
+                  const Icon(
+                    Icons.schedule,
+                    size: 16,
+                    color: AppColors.textTertiary,
+                  ),
+              ],
+            ),
           ),
         ),
       ),

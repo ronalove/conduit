@@ -171,6 +171,10 @@ class ChannelsNotifier extends Notifier<ChannelsState> {
       case '333':
       case 'TOPIC':
         _topicHandler.handleMessage(message);
+      case 'MODE':
+        _handleMode(message);
+      case 'AWAY':
+        _handleAway(message);
     }
   }
 
@@ -335,6 +339,141 @@ class ChannelsNotifier extends Notifier<ChannelsState> {
     }
 
     if (newChannels != state.channels) {
+      state = state.copyWith(channels: newChannels);
+    }
+  }
+
+  /// Handle MODE message for user modes (+o, -o, +v, -v, +h, -h).
+  void _handleMode(IrcMessage message) {
+    // MODE #channel +o nick
+    // MODE #channel +ov nick1 nick2
+    if (message.params.length < 2) return;
+
+    final target = message.params[0];
+    // Only handle channel modes, not user modes
+    if (!target.startsWith('#') && !target.startsWith('&')) return;
+
+    final channelKey = target.toLowerCase();
+    final channel = state.channels[channelKey];
+    if (channel == null) return;
+
+    final modeString = message.params[1];
+    // Mode arguments start at index 2
+    final modeArgs = message.params.length > 2 ? message.params.sublist(2) : <String>[];
+
+    var updatedChannel = channel;
+    var adding = true;
+    var argIndex = 0;
+
+    for (final char in modeString.split('')) {
+      if (char == '+') {
+        adding = true;
+        continue;
+      }
+      if (char == '-') {
+        adding = false;
+        continue;
+      }
+
+      // User modes that take a nickname argument
+      if (char == 'o' || char == 'v' || char == 'h') {
+        if (argIndex >= modeArgs.length) continue;
+
+        final targetNick = modeArgs[argIndex];
+        argIndex++;
+
+        final user = updatedChannel.getUser(targetNick);
+        if (user == null) continue;
+
+        final newMode = _getModeForChar(char, adding, user.mode);
+        if (newMode != user.mode) {
+          updatedChannel = updatedChannel.updateUser(
+            targetNick,
+            (u) => u.copyWith(mode: newMode),
+          );
+        }
+      } else if (_modeNeedsArgument(char)) {
+        // Other modes that take arguments (b, k, l, etc.) - consume the argument
+        argIndex++;
+      }
+      // Other modes without arguments are ignored (channel modes like n, t, s)
+    }
+
+    if (updatedChannel != channel) {
+      state = state.copyWith(
+        channels: {...state.channels, channelKey: updatedChannel},
+      );
+    }
+  }
+
+  /// Get the new UserMode based on the mode character and whether we're adding or removing.
+  UserMode _getModeForChar(String char, bool adding, UserMode currentMode) {
+    if (adding) {
+      // Adding a mode - set to the new mode (or higher if applicable)
+      return switch (char) {
+        'o' => UserMode.operator,
+        'h' => currentMode == UserMode.operator ? currentMode : UserMode.halfOp,
+        'v' => currentMode == UserMode.operator || currentMode == UserMode.halfOp
+            ? currentMode
+            : UserMode.voice,
+        _ => currentMode,
+      };
+    } else {
+      // Removing a mode
+      return switch (char) {
+        'o' when currentMode == UserMode.operator => UserMode.regular,
+        'h' when currentMode == UserMode.halfOp => UserMode.regular,
+        'v' when currentMode == UserMode.voice => UserMode.regular,
+        _ => currentMode,
+      };
+    }
+  }
+
+  /// Check if a mode character typically needs an argument.
+  bool _modeNeedsArgument(String mode) {
+    // Common modes that take arguments
+    // b: ban, k: key, l: limit, e: ban exception, I: invite exception
+    // q: owner, a: admin (on some networks)
+    return 'bkleIqa'.contains(mode);
+  }
+
+  /// Handle AWAY message (away-notify capability).
+  ///
+  /// :nick!user@host AWAY :I'm away
+  /// :nick!user@host AWAY (back from away)
+  void _handleAway(IrcMessage message) {
+    final nick = message.parsedSource?.nick;
+    if (nick == null) return;
+
+    // If there's a trailing parameter, user is away with that message
+    // If no parameter, user is back (not away)
+    final isAway = message.params.isNotEmpty;
+    final awayMessage = isAway ? message.params[0] : null;
+
+    // Update user in all channels where they exist
+    final newChannels = <String, Channel>{};
+    var changed = false;
+
+    for (final entry in state.channels.entries) {
+      final channel = entry.value;
+      final user = channel.getUser(nick);
+
+      if (user != null && (user.isAway != isAway || user.awayMessage != awayMessage)) {
+        final updated = channel.updateUser(
+          nick,
+          (u) => u.copyWith(
+            isAway: isAway,
+            awayMessage: awayMessage,
+          ),
+        );
+        newChannels[entry.key] = updated;
+        changed = true;
+      } else {
+        newChannels[entry.key] = channel;
+      }
+    }
+
+    if (changed) {
       state = state.copyWith(channels: newChannels);
     }
   }
