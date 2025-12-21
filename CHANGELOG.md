@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.0 (2025-12-21)
+
+- Intégration de la liste des utilisateurs avec les données IRC réelles
+- Mise à jour de l'interface utilisateur avec ke.network et affichage de la version réelle
+- Ajout de package_info_plus pour la gestion des informations de l'application
+
 ## v0.1.6 (2025-12-21)
 
 Corrections et améliorations mineures
