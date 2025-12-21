@@ -129,6 +129,38 @@ Security: STS (Strict Transport Security)
 - Flutter 3.38+
 - Dart 3.10+
 
+## Web Admin Panel (`web/`)
+
+Panneau d'administration web pour gerer le serveur Ergo via son API HTTP.
+
+### Structure
+- `server.py`: Backend Python (proxy vers API Ergo)
+- `register.html`: Page d'inscription publique
+- `admin.html`: Dashboard (status serveur, rehash)
+- `accounts.html`: Liste des comptes
+- `account-detail.html`: Details d'un compte
+
+### Routes
+| Route | Description |
+|-------|-------------|
+| `/register` | Inscription (public) |
+| `/admin` | Dashboard admin |
+| `/admin/accounts` | Liste comptes |
+| `/admin/accounts/<name>` | Details compte |
+| `/api/status` | GET - Status serveur |
+| `/api/accounts` | GET - Liste comptes |
+| `/api/accounts/<name>` | GET - Details compte |
+| `/api/register` | POST - Creer compte |
+| `/api/rehash` | POST - Recharger config |
+
+### Variables d'environnement
+- `ERGO_API_URL`: URL de l'API Ergo (defaut: `http://ergo:8089`)
+- `ERGO_API_TOKEN`: Bearer token pour l'API Ergo
+- `PORT`: Port d'ecoute (defaut: `8080`)
+
+### Securite
+Concu pour etre derriere un proxy authentifie. Seule `/register` est publique.
+
 ## CI/CD & Releases
 
 ### GitHub Actions Workflow
