@@ -156,6 +156,4 @@ After finishing a feature and user tells you it respect critera acceptance, alwa
 3. Push
 4. Close github related issue if any
 
-When creating a tag to publish a new version, always:
-1. update frontend/package.json with new version
-2. update claude-proxy-sdk/package.json with new version
+Never publish a tag. User will do it instead.

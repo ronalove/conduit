@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../theme/theme.dart';
 
@@ -22,7 +22,7 @@ class WindowTitleBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // macOS uses native title bar, no custom bar needed
+    // macOS uses native title bar with hidden style, no custom bar needed
     if (Platform.isMacOS) {
       return const SizedBox.shrink();
     }
@@ -43,7 +43,7 @@ class WindowTitleBar extends StatelessWidget {
           ],
           // Draggable area with optional title
           Expanded(
-            child: MoveWindow(
+            child: DragToMoveArea(
               child: title != null
                   ? Center(
                       child: Text(
@@ -64,51 +64,108 @@ class WindowTitleBar extends StatelessWidget {
   }
 }
 
-/// macOS-style window buttons (close, minimize, maximize).
-class _MacOSWindowButtons extends StatelessWidget {
-  const _MacOSWindowButtons();
+/// Windows-style window buttons.
+class _WindowsWindowButtons extends StatelessWidget {
+  const _WindowsWindowButtons();
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8),
-      child: Row(
-        children: [
-          _MacButton(
-            color: const Color(0xFFFF5F57),
-            onPressed: () => appWindow.close(),
-          ),
-          const SizedBox(width: 8),
-          _MacButton(
-            color: const Color(0xFFFEBC2E),
-            onPressed: () => appWindow.minimize(),
-          ),
-          const SizedBox(width: 8),
-          _MacButton(
-            color: const Color(0xFF28C840),
-            onPressed: () => appWindow.maximizeOrRestore(),
-          ),
-        ],
-      ),
+    return Row(
+      children: [
+        _WindowButton(
+          icon: Icons.remove,
+          onPressed: () => windowManager.minimize(),
+          hoverColor: AppColors.surfaceElevated,
+        ),
+        _MaximizeButton(),
+        _WindowButton(
+          icon: Icons.close,
+          onPressed: () => windowManager.close(),
+          hoverColor: const Color(0xFFE81123),
+          hoverIconColor: Colors.white,
+        ),
+      ],
     );
   }
 }
 
-/// A single macOS-style button.
-class _MacButton extends StatefulWidget {
-  const _MacButton({
-    required this.color,
-    required this.onPressed,
-  });
-
-  final Color color;
-  final VoidCallback onPressed;
-
+/// Maximize/restore button that changes icon based on window state.
+class _MaximizeButton extends StatefulWidget {
   @override
-  State<_MacButton> createState() => _MacButtonState();
+  State<_MaximizeButton> createState() => _MaximizeButtonState();
 }
 
-class _MacButtonState extends State<_MacButton> {
+class _MaximizeButtonState extends State<_MaximizeButton> with WindowListener {
+  bool _isMaximized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    windowManager.addListener(this);
+    _updateMaximizedState();
+  }
+
+  @override
+  void dispose() {
+    windowManager.removeListener(this);
+    super.dispose();
+  }
+
+  Future<void> _updateMaximizedState() async {
+    final isMaximized = await windowManager.isMaximized();
+    if (mounted && isMaximized != _isMaximized) {
+      setState(() => _isMaximized = isMaximized);
+    }
+  }
+
+  @override
+  void onWindowMaximize() {
+    setState(() => _isMaximized = true);
+  }
+
+  @override
+  void onWindowUnmaximize() {
+    setState(() => _isMaximized = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _WindowButton(
+      icon: _isMaximized ? Icons.filter_none : Icons.crop_square,
+      iconSize: _isMaximized ? 14 : 18,
+      onPressed: () async {
+        if (await windowManager.isMaximized()) {
+          await windowManager.unmaximize();
+        } else {
+          await windowManager.maximize();
+        }
+      },
+      hoverColor: AppColors.surfaceElevated,
+    );
+  }
+}
+
+/// A single window control button.
+class _WindowButton extends StatefulWidget {
+  const _WindowButton({
+    required this.icon,
+    required this.onPressed,
+    required this.hoverColor,
+    this.hoverIconColor,
+    this.iconSize = 18,
+  });
+
+  final IconData icon;
+  final VoidCallback onPressed;
+  final Color hoverColor;
+  final Color? hoverIconColor;
+  final double iconSize;
+
+  @override
+  State<_WindowButton> createState() => _WindowButtonState();
+}
+
+class _WindowButtonState extends State<_WindowButton> {
   bool _isHovering = false;
 
   @override
@@ -119,61 +176,18 @@ class _MacButtonState extends State<_MacButton> {
       child: GestureDetector(
         onTap: widget.onPressed,
         child: Container(
-          width: 12,
-          height: 12,
-          decoration: BoxDecoration(
-            color: widget.color,
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: widget.color.withValues(alpha: 0.5),
-              width: 0.5,
-            ),
+          width: 46,
+          height: 32,
+          color: _isHovering ? widget.hoverColor : Colors.transparent,
+          child: Icon(
+            widget.icon,
+            size: widget.iconSize,
+            color: _isHovering && widget.hoverIconColor != null
+                ? widget.hoverIconColor
+                : AppColors.textSecondary,
           ),
-          child: _isHovering
-              ? Icon(
-                  widget.color == const Color(0xFFFF5F57)
-                      ? Icons.close
-                      : widget.color == const Color(0xFFFEBC2E)
-                          ? Icons.remove
-                          : Icons.crop_square,
-                  size: 8,
-                  color: Colors.black.withValues(alpha: 0.6),
-                )
-              : null,
         ),
       ),
     );
   }
 }
-
-/// Windows-style window buttons.
-class _WindowsWindowButtons extends StatelessWidget {
-  const _WindowsWindowButtons();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        MinimizeWindowButton(colors: _windowButtonColors),
-        MaximizeWindowButton(colors: _windowButtonColors),
-        CloseWindowButton(colors: _closeButtonColors),
-      ],
-    );
-  }
-}
-
-final _windowButtonColors = WindowButtonColors(
-  iconNormal: AppColors.textSecondary,
-  mouseOver: AppColors.surface.withValues(alpha: 0.1),
-  mouseDown: AppColors.surface.withValues(alpha: 0.2),
-  iconMouseOver: AppColors.textPrimary,
-  iconMouseDown: AppColors.textPrimary,
-);
-
-final _closeButtonColors = WindowButtonColors(
-  iconNormal: AppColors.textSecondary,
-  mouseOver: const Color(0xFFE81123),
-  mouseDown: const Color(0xFFB71C1C),
-  iconMouseOver: Colors.white,
-  iconMouseDown: Colors.white,
-);

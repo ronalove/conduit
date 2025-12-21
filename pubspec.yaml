@@ -31,7 +31,7 @@ dependencies:
   sqlite3_flutter_libs: ^0.5.31
 
   # Desktop Window
-  bitsdojo_window: ^0.1.6
+  window_manager: ^0.4.3
 
   # Utils
   freezed_annotation: ^3.1.0

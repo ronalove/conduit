@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'features/auth/auth.dart';
 import 'features/channels/channels.dart';
@@ -20,29 +20,36 @@ import 'theme/theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Configure window on desktop platforms
+  if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
+    await windowManager.ensureInitialized();
+
+    final geometry = await WindowGeometryNotifier.loadFromPrefs();
+
+    final windowOptions = WindowOptions(
+      size: Size(geometry.width, geometry.height),
+      minimumSize: const Size(800, 600),
+      center: geometry.x == null || geometry.y == null,
+      skipTaskbar: false,
+      titleBarStyle: Platform.isMacOS
+          ? TitleBarStyle.hidden
+          : TitleBarStyle.normal,
+    );
+
+    await windowManager.waitUntilReadyToShow(windowOptions, () async {
+      if (geometry.x != null && geometry.y != null) {
+        await windowManager.setPosition(Offset(geometry.x!, geometry.y!));
+      }
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
+
   runApp(
     const ProviderScope(
       child: ConduitApp(),
     ),
   );
-
-  // Configure window on desktop platforms
-  if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
-    doWhenWindowReady(() async {
-      final geometry = await WindowGeometryNotifier.loadFromPrefs();
-
-      appWindow.minSize = const Size(800, 600);
-      appWindow.size = Size(geometry.width, geometry.height);
-
-      if (geometry.x != null && geometry.y != null) {
-        appWindow.position = Offset(geometry.x!, geometry.y!);
-      } else {
-        appWindow.alignment = Alignment.center;
-      }
-
-      appWindow.show();
-    });
-  }
 }
 
 class ConduitApp extends ConsumerWidget {
@@ -120,11 +127,11 @@ class _DesktopWrapperState extends ConsumerState<_DesktopWrapper>
     print('[Knights Network] Au revoir !');
   }
 
-  void _saveGeometry() {
+  Future<void> _saveGeometry() async {
     if (!Platform.isMacOS && !Platform.isWindows && !Platform.isLinux) return;
 
-    final position = appWindow.position;
-    final size = appWindow.size;
+    final position = await windowManager.getPosition();
+    final size = await windowManager.getSize();
 
     ref.read(windowGeometryProvider.notifier).saveGeometry(
           x: position.dx,
