@@ -59,4 +59,4 @@ Accessible via Settings :
 ## Support
 
 Pour signaler un bug ou demander une feature :
-- [Issues GitHub](https://github.com/r9r-dev/knights-network/issues)
+- [Issues GitHub](https://github.com/r9r-dev/conduit/issues)
