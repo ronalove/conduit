@@ -194,7 +194,7 @@ jobs:
           # Copy built files
           cp -r build/linux/x64/release/bundle/* ${APP_DIR}/usr/bin/
 
-          # Create desktop entry
+          # Create desktop entry at root of AppDir
           cat > ${APP_DIR}/knights-network.desktop << EOF
           [Desktop Entry]
           Name=Knights Network
@@ -203,9 +203,6 @@ jobs:
           Type=Application
           Categories=Network;Chat;
           EOF
-
-          # Copy desktop file to root
-          cp ${APP_DIR}/knights-network.desktop ${APP_DIR}/
 
           # Create a simple icon (placeholder - replace with actual icon later)
           convert -size 256x256 xc:navy ${APP_DIR}/knights-network.png 2>/dev/null || touch ${APP_DIR}/knights-network.png
