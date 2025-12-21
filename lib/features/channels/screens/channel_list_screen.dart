@@ -15,8 +15,6 @@ class ChannelListScreen extends StatelessWidget {
     this.onLeaveChannel,
     this.onAddChannel,
     this.onBrowseChannels,
-    this.showServerStatus = true,
-    this.serverName,
   });
 
   /// List of joined channels.
@@ -43,12 +41,6 @@ class ChannelListScreen extends StatelessWidget {
   /// Called when browse channels button is pressed.
   final VoidCallback? onBrowseChannels;
 
-  /// Whether to show server status at top.
-  final bool showServerStatus;
-
-  /// Server name for status display.
-  final String? serverName;
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -63,22 +55,10 @@ class ChannelListScreen extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
             children: [
-              // Server status
-              if (showServerStatus && serverName != null) ...[
-                ChannelTile(
-                  name: serverName!,
-                  type: ChannelType.server,
-                  topic: 'Connected',
-                  isSelected: selectedChannel == serverName,
-                  onTap: () => onChannelTap?.call(serverName!, ChannelType.server),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-              ],
-
               // Channels section
               if (channels.isNotEmpty) ...[
                 ChannelSectionHeader(
-                  title: 'Channels',
+                  title: 'Canaux',
                   trailing: Text(
                     '${channels.length}',
                     style: AppTextStyles.labelSmall.copyWith(
@@ -105,7 +85,7 @@ class ChannelListScreen extends StatelessWidget {
               // Private messages section
               if (privateMessages.isNotEmpty) ...[
                 ChannelSectionHeader(
-                  title: 'Direct Messages',
+                  title: 'Messages privés',
                   trailing: Text(
                     '${privateMessages.length}',
                     style: AppTextStyles.labelSmall.copyWith(
@@ -144,7 +124,7 @@ class ChannelListScreen extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              'Channels',
+              'Canaux',
               style: AppTextStyles.headlineMedium,
             ),
           ),
@@ -152,13 +132,13 @@ class ChannelListScreen extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.list, size: 22),
               onPressed: onBrowseChannels,
-              tooltip: 'Browse channels',
+              tooltip: 'Parcourir les canaux',
             ),
           if (onAddChannel != null)
             IconButton(
               icon: const Icon(Icons.add, size: 22),
               onPressed: onAddChannel,
-              tooltip: 'Join channel',
+              tooltip: 'Rejoindre un canal',
             ),
         ],
       ),
@@ -178,14 +158,14 @@ class ChannelListScreen extends StatelessWidget {
           ),
           AppSpacing.gapVerticalLg,
           Text(
-            'No channels yet',
+            'Aucun canal',
             style: AppTextStyles.bodyMedium.copyWith(
               color: AppColors.textSecondary,
             ),
           ),
           AppSpacing.gapVerticalSm,
           Text(
-            'Join a channel to start chatting',
+            'Rejoignez un canal pour commencer',
             style: AppTextStyles.bodySmall.copyWith(
               color: AppColors.textTertiary,
             ),

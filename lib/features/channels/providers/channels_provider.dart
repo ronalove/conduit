@@ -8,6 +8,7 @@ import '../../../core/irc/parser/irc_message.dart';
 import '../../../core/irc/parser/irc_parser.dart';
 import '../../../core/irc/protocol/names_handler.dart';
 import '../../../core/irc/protocol/topic_handler.dart';
+import '../../../core/irc/state/connection_state.dart';
 import '../../connection/providers/connection_provider.dart';
 import '../../connection/providers/irc_session_manager.dart';
 import '../../users/models/channel_user.dart';
@@ -96,18 +97,25 @@ class ChannelsNotifier extends Notifier<ChannelsState> {
     _namesSubscription = _namesHandler.onNamesReceived.listen(_handleNamesUpdate);
     _topicSubscription = _topicHandler.onTopicReceived.listen(_handleTopicUpdate);
 
-    // Check if session is already ready (in case provider is created after login)
-    final session = ref.read(ircSessionProvider);
-    if (session.isReady) {
+    // Check if connection is already active (in case provider is created after login)
+    final connection = ref.read(connectionProvider);
+    if (connection.phase == ConnectionPhase.registering ||
+        connection.phase == ConnectionPhase.connected) {
       // Use Future.microtask to avoid modifying state during build
       Future.microtask(_subscribeToLines);
     }
 
-    // Subscribe to IRC lines when session becomes ready
-    ref.listen(ircSessionProvider, (prev, next) {
-      if (next.isReady && (prev == null || !prev.isReady)) {
+    // Subscribe to IRC lines as soon as connection enters registering phase
+    // This ensures we catch JOIN messages sent by the bouncer immediately after 001
+    ref.listen(connectionProvider, (prev, next) {
+      final wasActive = prev?.phase == ConnectionPhase.registering ||
+          prev?.phase == ConnectionPhase.connected;
+      final isActive = next.phase == ConnectionPhase.registering ||
+          next.phase == ConnectionPhase.connected;
+
+      if (isActive && !wasActive) {
         _subscribeToLines();
-      } else if (!next.isReady && (prev?.isReady ?? false)) {
+      } else if (!isActive && wasActive) {
         _handleDisconnect();
       }
     });

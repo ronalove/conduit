@@ -90,38 +90,91 @@ class ChannelTile extends StatelessWidget {
   }
 
   Widget _buildTile(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: 2,
-      ),
-      decoration: BoxDecoration(
-        color: isSelected ? AppColors.primary.withValues(alpha: 0.15) : null,
-        borderRadius: AppSpacing.borderRadiusSm,
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          onLongPress: onLongPress,
+    return GestureDetector(
+      onSecondaryTapDown: (details) => _showContextMenu(context, details.globalPosition),
+      child: Container(
+        margin: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: 2,
+        ),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary.withValues(alpha: 0.15) : null,
           borderRadius: AppSpacing.borderRadiusSm,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.sm,
-            ),
-            child: Row(
-              children: [
-                _buildIcon(),
-                AppSpacing.gapSm,
-                Expanded(child: _buildContent()),
-                if (hasUnread) _buildBadge(),
-              ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            onLongPress: () => _showContextMenu(context, null),
+            borderRadius: AppSpacing.borderRadiusSm,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.sm,
+              ),
+              child: Row(
+                children: [
+                  _buildIcon(),
+                  AppSpacing.gapSm,
+                  Expanded(child: _buildContent()),
+                  if (hasUnread) _buildBadge(),
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  void _showContextMenu(BuildContext context, Offset? position) {
+    // Only show context menu for channels (not server status)
+    if (type == ChannelType.server) return;
+
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+    final RenderBox box = context.findRenderObject() as RenderBox;
+
+    // Use tap position for right-click, or center of tile for long-press
+    final Offset menuPosition = position ??
+        box.localToGlobal(Offset(box.size.width / 2, box.size.height / 2));
+
+    showMenu<String>(
+      context: context,
+      position: RelativeRect.fromRect(
+        Rect.fromLTWH(menuPosition.dx, menuPosition.dy, 0, 0),
+        Offset.zero & overlay.size,
+      ),
+      items: [
+        if (type == ChannelType.channel && onDismissed != null)
+          PopupMenuItem<String>(
+            value: 'leave',
+            child: Row(
+              children: [
+                Icon(Icons.exit_to_app, size: 20, color: AppColors.error),
+                const SizedBox(width: AppSpacing.sm),
+                Text('Quitter le canal', style: TextStyle(color: AppColors.error)),
+              ],
+            ),
+          ),
+        if (type == ChannelType.private)
+          const PopupMenuItem<String>(
+            value: 'close',
+            child: Row(
+              children: [
+                Icon(Icons.close, size: 20),
+                SizedBox(width: AppSpacing.sm),
+                Text('Fermer la conversation'),
+              ],
+            ),
+          ),
+      ],
+    ).then((value) {
+      if (value == 'leave' && onDismissed != null) {
+        onDismissed!();
+      } else if (value == 'close' && onDismissed != null) {
+        onDismissed!();
+      }
+    });
   }
 
   Widget _buildIcon() {

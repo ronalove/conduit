@@ -66,6 +66,37 @@ final ircLinesProvider = StreamProvider<String>((ref) {
   return notifier.lines;
 });
 
+/// Provider for IRC logs (last 500 lines).
+final ircLogsProvider = NotifierProvider<IrcLogsNotifier, List<String>>(
+  IrcLogsNotifier.new,
+);
+
+/// Notifier for IRC logs.
+class IrcLogsNotifier extends Notifier<List<String>> {
+  static const _maxLines = 500;
+  StreamSubscription<String>? _subscription;
+
+  @override
+  List<String> build() {
+    final connectionNotifier = ref.read(connectionProvider.notifier);
+    _subscription = connectionNotifier.lines.listen(_addLog);
+
+    ref.onDispose(() {
+      _subscription?.cancel();
+    });
+
+    return [];
+  }
+
+  void _addLog(String line) {
+    final newLogs = [...state, line];
+    if (newLogs.length > _maxLines) {
+      newLogs.removeAt(0);
+    }
+    state = newLogs;
+  }
+}
+
 /// Connection notifier managing the IRC socket connection.
 class ConnectionNotifier extends Notifier<ConnectionState> {
   SocketManager? _socketManager;

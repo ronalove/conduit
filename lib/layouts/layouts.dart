@@ -8,3 +8,4 @@ export 'breakpoints.dart';
 export 'desktop_layout.dart';
 export 'layout_extensions.dart';
 export 'mobile_layout.dart';
+export 'window_title_bar.dart';

@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../channels/providers/channels_provider.dart';
+import '../../chat/providers/messages_provider.dart';
 import '../../connection/connection.dart';
 import '../services/auth_service.dart';
 
@@ -130,6 +132,12 @@ class AuthNotifier extends Notifier<AuthState> {
         saslUsername: username,
         saslPassword: password,
       );
+
+      // Force initialization of providers BEFORE starting session
+      // so they can receive IRC messages from the start
+      ref.read(channelsProvider);
+      ref.read(messagesProvider);
+      ref.read(ircLogsProvider);
 
       await ref.read(ircSessionProvider.notifier).startSession(config);
 
