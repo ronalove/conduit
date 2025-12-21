@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knights Network - Comptes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .nav {
+            display: flex;
+            gap: 16px;
+        }
+
+        .nav a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .nav a.active {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 16px;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 16px;
+            padding-left: 40px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .search-box input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .search-box::before {
+            content: "";
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.4);
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'/%3E%3C/svg%3E") no-repeat center;
+        }
+
+        .stats {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            text-align: left;
+            padding: 16px 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table td {
+            padding: 16px 20px;
+            color: #fff;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tr:hover td {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .table a {
+            color: #a5b4fc;
+            text-decoration: none;
+        }
+
+        .table a:hover {
+            text-decoration: underline;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-active {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .badge-inactive {
+            background: rgba(156, 163, 175, 0.2);
+            color: #9ca3af;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            display: block;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Knights Network Admin</h1>
+            <nav class="nav">
+                <a href="/admin">Dashboard</a>
+                <a href="/admin/accounts" class="active">Comptes</a>
+                <a href="/register">Inscription</a>
+            </nav>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <div class="toolbar">
+            <div class="search-box">
+                <input type="text" id="search" placeholder="Rechercher un compte..." oninput="filterAccounts()">
+            </div>
+            <div class="stats" id="stats"></div>
+        </div>
+
+        <div class="section">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nom du compte</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="accounts-list">
+                    <tr>
+                        <td colspan="3" class="loading">Chargement...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let allAccounts = [];
+        const message = document.getElementById('message');
+        const accountsList = document.getElementById('accounts-list');
+        const stats = document.getElementById('stats');
+
+        async function loadAccounts() {
+            try {
+                const response = await fetch('/api/accounts');
+                const data = await response.json();
+
+                if (data.success) {
+                    allAccounts = data.accounts || [];
+                    stats.textContent = `${allAccounts.length} compte(s)`;
+                    renderAccounts(allAccounts);
+                } else {
+                    showMessage(data.error || 'Erreur lors du chargement', 'error');
+                    accountsList.innerHTML = '<tr><td colspan="3" class="empty">Erreur lors du chargement</td></tr>';
+                }
+            } catch (error) {
+                showMessage('Erreur de connexion au serveur', 'error');
+                accountsList.innerHTML = '<tr><td colspan="3" class="empty">Erreur de connexion</td></tr>';
+            }
+        }
+
+        function renderAccounts(accounts) {
+            if (accounts.length === 0) {
+                accountsList.innerHTML = '<tr><td colspan="3" class="empty">Aucun compte trouve</td></tr>';
+                return;
+            }
+
+            accountsList.innerHTML = accounts.map(account => {
+                const name = typeof account === 'string' ? account : account.name || account.accountName;
+                return `
+                    <tr>
+                        <td><a href="/admin/accounts/${encodeURIComponent(name)}">${escapeHtml(name)}</a></td>
+                        <td><span class="badge badge-active">Actif</span></td>
+                        <td><a href="/admin/accounts/${encodeURIComponent(name)}">Voir details</a></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterAccounts() {
+            const query = document.getElementById('search').value.toLowerCase();
+            const filtered = allAccounts.filter(account => {
+                const name = typeof account === 'string' ? account : account.name || account.accountName;
+                return name.toLowerCase().includes(query);
+            });
+            renderAccounts(filtered);
+            stats.textContent = `${filtered.length} / ${allAccounts.length} compte(s)`;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showMessage(text, type) {
+            message.textContent = text;
+            message.className = 'message ' + type;
+        }
+
+        // Charger les comptes au demarrage
+        loadAccounts();
+    </script>
+</body>
+</html>

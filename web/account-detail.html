@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knights Network - Detail du compte</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .nav {
+            display: flex;
+            gap: 16px;
+        }
+
+        .nav a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .nav a.active {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #a5b4fc;
+        }
+
+        .breadcrumb span {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .breadcrumb .current {
+            color: #fff;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section h3 {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .info-item label {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-item span {
+            color: #fff;
+            font-size: 15px;
+        }
+
+        .info-item code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #a5b4fc;
+            font-size: 14px;
+        }
+
+        .channels-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .channel-tag {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: monospace;
+        }
+
+        .empty-state {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            display: block;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Knights Network Admin</h1>
+            <nav class="nav">
+                <a href="/admin">Dashboard</a>
+                <a href="/admin/accounts" class="active">Comptes</a>
+                <a href="/register">Inscription</a>
+            </nav>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="/admin/accounts">Comptes</a>
+            <span>/</span>
+            <span class="current" id="breadcrumb-name">...</span>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <div id="content">
+            <div class="loading">Chargement...</div>
+        </div>
+    </div>
+
+    <script>
+        const message = document.getElementById('message');
+        const content = document.getElementById('content');
+        const breadcrumbName = document.getElementById('breadcrumb-name');
+
+        // Extraire le nom du compte de l'URL
+        const pathParts = window.location.pathname.split('/');
+        const accountName = decodeURIComponent(pathParts[pathParts.length - 1]);
+
+        async function loadAccountDetails() {
+            if (!accountName) {
+                showMessage('Nom de compte manquant', 'error');
+                return;
+            }
+
+            breadcrumbName.textContent = accountName;
+            document.title = `Knights Network - ${accountName}`;
+
+            try {
+                const response = await fetch(`/api/accounts/${encodeURIComponent(accountName)}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    renderAccountDetails(data);
+                } else {
+                    showMessage(data.error || 'Compte non trouve', 'error');
+                    content.innerHTML = '<div class="section"><p class="empty-state">Compte non trouve</p></div>';
+                }
+            } catch (error) {
+                showMessage('Erreur de connexion au serveur', 'error');
+                content.innerHTML = '<div class="section"><p class="empty-state">Erreur de connexion</p></div>';
+            }
+        }
+
+        function renderAccountDetails(data) {
+            const registeredAt = data.registeredAt ? new Date(data.registeredAt).toLocaleString('fr-FR') : 'Inconnue';
+            const channels = data.channels || [];
+
+            content.innerHTML = `
+                <div class="section">
+                    <h2>${escapeHtml(data.accountName || accountName)} <span class="badge">Actif</span></h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Nom du compte</label>
+                            <code>${escapeHtml(data.accountName || accountName)}</code>
+                        </div>
+                        <div class="info-item">
+                            <label>Email</label>
+                            <span>${data.email ? escapeHtml(data.email) : 'Non defini'}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Date d'inscription</label>
+                            <span>${registeredAt}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Channels associes</h3>
+                    ${channels.length > 0 ? `
+                        <div class="channels-list">
+                            ${channels.map(ch => `<span class="channel-tag">${escapeHtml(ch)}</span>`).join('')}
+                        </div>
+                    ` : `
+                        <p class="empty-state">Aucun channel associe</p>
+                    `}
+                </div>
+            `;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showMessage(text, type) {
+            message.textContent = text;
+            message.className = 'message ' + type;
+        }
+
+        // Charger les details au demarrage
+        loadAccountDetails();
+    </script>
+</body>
+</html>
