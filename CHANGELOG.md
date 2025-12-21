@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.1.6 (2025-12-21)
+
+Corrections et améliorations mineures
+
 ## v0.1.5 (2025-12-21)
 
 - Refactorisation de la documentation
