@@ -1,8 +1,8 @@
-# Conduit - Manuel Utilisateur
+# Knights Network - Manuel Utilisateur
 
 ## Introduction
 
-Conduit est un client IRC moderne avec support complet IRCv3.
+Knights Network est un client IRC moderne avec support complet IRCv3.
 
 ## Premiers Pas
 
@@ -59,4 +59,4 @@ Accessible via Settings :
 ## Support
 
 Pour signaler un bug ou demander une feature :
-- [Issues GitHub](https://github.com/r9r-dev/conduit/issues)
+- [Issues GitHub](https://github.com/r9r-dev/knights-network/issues)

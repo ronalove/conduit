@@ -192,7 +192,7 @@ class SettingsScreen extends ConsumerWidget {
                 onTap: () {
                   showLicensePage(
                     context: context,
-                    applicationName: 'Conduit',
+                    applicationName: 'Knights Network',
                     applicationVersion: '1.0.0',
                   );
                 },
@@ -200,7 +200,7 @@ class SettingsScreen extends ConsumerWidget {
               _buildDivider(),
               _SettingsTile(
                 title: 'Source Code',
-                subtitle: 'github.com/r9r-dev/conduit',
+                subtitle: 'github.com/r9r-dev/knights-network',
                 icon: Icons.code,
               ),
             ],

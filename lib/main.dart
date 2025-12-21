@@ -10,6 +10,7 @@ import 'features/channels/channels.dart';
 import 'features/chat/chat.dart';
 import 'features/chat/providers/messages_provider.dart';
 import 'features/connection/connection.dart';
+import 'features/connection/widgets/irc_logs_view.dart';
 import 'features/settings/settings.dart';
 import 'features/settings/providers/window_geometry_provider.dart';
 import 'features/users/users.dart';
@@ -52,7 +53,7 @@ class ConduitApp extends ConsumerWidget {
     final themeState = ref.watch(themeProvider);
 
     return MaterialApp(
-      title: 'Conduit',
+      title: 'Knights Network',
       debugShowCheckedModeBanner: false,
       theme: themeState.themeData,
       home: const _DesktopWrapper(child: AuthGate()),
@@ -101,6 +102,22 @@ class _DesktopWrapperState extends ConsumerState<_DesktopWrapper>
         state == AppLifecycleState.detached) {
       _saveGeometry();
     }
+
+    // Disconnect IRC session when app is closing
+    if (state == AppLifecycleState.detached) {
+      _disconnectSession();
+    }
+  }
+
+  Future<void> _disconnectSession() async {
+    print('[Knights Network] Fermeture de l\'application...');
+    try {
+      await ref.read(ircSessionProvider.notifier).endSession();
+      print('[Knights Network] Session IRC déconnectée.');
+    } catch (_) {
+      // Ignore errors during shutdown
+    }
+    print('[Knights Network] Au revoir !');
   }
 
   void _saveGeometry() {
@@ -192,6 +209,7 @@ class LayoutDemo extends ConsumerStatefulWidget {
 
 class _LayoutDemoState extends ConsumerState<LayoutDemo> {
   bool _showSettings = false;
+  bool _showLogs = false;
 
   @override
   Widget build(BuildContext context) {
@@ -214,9 +232,6 @@ class _LayoutDemoState extends ConsumerState<LayoutDemo> {
       Future.microtask(() => messagesNotifier.loadChannelMessages(selectedChannelName));
     }
 
-    // Get server name from session or config
-    final serverName = session.serverName ?? 'Ronan';
-
     // Show settings screen
     if (_showSettings) {
       return SettingsScreen(
@@ -238,12 +253,15 @@ class _LayoutDemoState extends ConsumerState<LayoutDemo> {
                   channels: channels,
                   privateMessages: const [], // TODO: implement DMs
                   selectedChannel: selectedChannelName,
-                  serverName: serverName,
                   onChannelTap: (name, type) {
                     if (type == ChannelType.channel) {
                       channelsNotifier.selectChannel(name);
                       channelsNotifier.markAsRead(name);
                       messagesNotifier.markChannelAsRead(name);
+                      // Fermer les logs si ouverts
+                      if (_showLogs) {
+                        setState(() => _showLogs = false);
+                      }
                     }
                   },
                   onLeaveChannel: (name) {
@@ -257,36 +275,83 @@ class _LayoutDemoState extends ConsumerState<LayoutDemo> {
                   },
                 ),
               ),
-              // Settings button at bottom of sidebar
+              // Bottom bar with server status and settings
               Container(
                 decoration: const BoxDecoration(
                   border: Border(top: BorderSide(color: AppColors.divider)),
                 ),
-                child: ListTile(
-                  leading: const Icon(Icons.settings, size: 20),
-                  title: const Text('Settings'),
-                  dense: true,
-                  onTap: () => setState(() => _showSettings = true),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+                child: Row(
+                  children: [
+                    // Server status indicator
+                    GestureDetector(
+                      onTap: () => setState(() => _showLogs = !_showLogs),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 10,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: session.isReady ? AppColors.success : AppColors.error,
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Text(
+                            'ronan.lol',
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+                    // Settings button
+                    InkWell(
+                      onTap: () => setState(() => _showSettings = true),
+                      borderRadius: BorderRadius.circular(4),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.settings, size: 18, color: AppColors.textSecondary),
+                            const SizedBox(width: AppSpacing.xs),
+                            Text(
+                              'Paramètres',
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          chatArea: ChatScreen(
-            channelName: selectedChannelName ?? 'No channel selected',
-            topic: selectedTopic,
-            messages: messagesState?.messages ?? [],
-            isLoadingHistory: messagesState?.isLoadingHistory ?? false,
-            typingUsers: const [], // TODO: connect to typing provider
-            showHeader: false,
-            onSendMessage: (msg) {
-              if (selectedChannelName != null) {
-                messagesNotifier.sendMessage(selectedChannelName, msg);
-              }
-            },
-            onLoadMore: selectedChannelName != null
-                ? () => messagesNotifier.loadMoreHistory(selectedChannelName)
-                : null,
-          ),
+          chatArea: _showLogs
+              ? _buildLogsView()
+              : ChatScreen(
+                  channelName: selectedChannelName ?? 'Aucun canal sélectionné',
+                  topic: selectedTopic,
+                  messages: messagesState?.messages ?? [],
+                  isLoadingHistory: messagesState?.isLoadingHistory ?? false,
+                  typingUsers: const [], // TODO: connect to typing provider
+                  showHeader: false,
+                  onSendMessage: (msg) {
+                    if (selectedChannelName != null) {
+                      messagesNotifier.sendMessage(selectedChannelName, msg);
+                    }
+                  },
+                  onLoadMore: selectedChannelName != null
+                      ? () => messagesNotifier.loadMoreHistory(selectedChannelName)
+                      : null,
+                ),
           usersSidebar: UserList(
             users: selectedChannel?.sortedUsers ?? [],
             onUserTap: (user) {},
@@ -297,6 +362,45 @@ class _LayoutDemoState extends ConsumerState<LayoutDemo> {
     );
   }
 
+  Widget _buildLogsView() {
+    final logs = ref.watch(ircLogsProvider);
+
+    return Column(
+      children: [
+        // Header
+        Container(
+          height: AppSpacing.appBarHeight,
+          padding: AppSpacing.paddingHorizontalLg,
+          decoration: const BoxDecoration(
+            border: Border(bottom: BorderSide(color: AppColors.divider)),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.terminal, size: 20, color: AppColors.textSecondary),
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                'Logs IRC',
+                style: AppTextStyles.headlineMedium,
+              ),
+              const Spacer(),
+              Text(
+                '${logs.length} lignes',
+                style: AppTextStyles.bodySmall.copyWith(color: AppColors.textTertiary),
+              ),
+            ],
+          ),
+        ),
+        // Logs content
+        Expanded(
+          child: Container(
+            color: AppColors.surfaceContainer,
+            child: IrcLogsView(logs: logs),
+          ),
+        ),
+      ],
+    );
+  }
+
   void _showJoinChannelDialog(BuildContext context) {
     final controller = TextEditingController();
     final channelsNotifier = ref.read(channelsProvider.notifier);
@@ -304,13 +408,13 @@ class _LayoutDemoState extends ConsumerState<LayoutDemo> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Join Channel'),
+        title: const Text('Rejoindre un canal'),
         content: TextField(
           controller: controller,
           autofocus: true,
           decoration: const InputDecoration(
-            hintText: '#channel',
-            labelText: 'Channel name',
+            hintText: '#canal',
+            labelText: 'Nom du canal',
           ),
           onSubmitted: (value) {
             if (value.isNotEmpty) {
@@ -323,7 +427,7 @@ class _LayoutDemoState extends ConsumerState<LayoutDemo> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: const Text('Annuler'),
           ),
           FilledButton(
             onPressed: () {
@@ -334,7 +438,7 @@ class _LayoutDemoState extends ConsumerState<LayoutDemo> {
                 Navigator.of(context).pop();
               }
             },
-            child: const Text('Join'),
+            child: const Text('Rejoindre'),
           ),
         ],
       ),
@@ -363,7 +467,6 @@ class _MobilePlaceholder extends ConsumerWidget {
     // Watch channel providers
     final channels = ref.watch(channelListProvider);
     final selectedChannel = ref.watch(selectedChannelProvider);
-    final session = ref.watch(ircSessionProvider);
     final channelsNotifier = ref.read(channelsProvider.notifier);
     final messagesNotifier = ref.read(messagesProvider.notifier);
 
@@ -372,7 +475,6 @@ class _MobilePlaceholder extends ConsumerWidget {
 
     final selectedChannelName = selectedChannel?.name;
     final selectedTopic = selectedChannel?.topicText;
-    final serverName = session.serverName ?? 'Ronan';
 
     // Load messages when channel is selected
     if (selectedChannelName != null && messagesState == null) {
@@ -384,7 +486,6 @@ class _MobilePlaceholder extends ConsumerWidget {
         channels: channels,
         privateMessages: const [], // TODO: implement DMs
         selectedChannel: selectedChannelName,
-        serverName: serverName,
         onChannelTap: (name, type) {
           if (type == ChannelType.channel) {
             channelsNotifier.selectChannel(name);
@@ -403,7 +504,7 @@ class _MobilePlaceholder extends ConsumerWidget {
         },
       ),
       chatPage: ChatScreen(
-        channelName: selectedChannelName ?? 'No channel selected',
+        channelName: selectedChannelName ?? 'Aucun canal sélectionné',
         topic: selectedTopic,
         messages: messagesState?.messages ?? [],
         isLoadingHistory: messagesState?.isLoadingHistory ?? false,
@@ -438,13 +539,13 @@ class _MobilePlaceholder extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Join Channel'),
+        title: const Text('Rejoindre un canal'),
         content: TextField(
           controller: controller,
           autofocus: true,
           decoration: const InputDecoration(
-            hintText: '#channel',
-            labelText: 'Channel name',
+            hintText: '#canal',
+            labelText: 'Nom du canal',
           ),
           onSubmitted: (value) {
             if (value.isNotEmpty) {
@@ -457,7 +558,7 @@ class _MobilePlaceholder extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: const Text('Annuler'),
           ),
           FilledButton(
             onPressed: () {
@@ -468,7 +569,7 @@ class _MobilePlaceholder extends ConsumerWidget {
                 Navigator.of(context).pop();
               }
             },
-            child: const Text('Join'),
+            child: const Text('Rejoindre'),
           ),
         ],
       ),
@@ -510,7 +611,7 @@ class _ThemeShowcaseState extends State<ThemeShowcase> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Conduit Theme'),
+        title: const Text('Knights Network Theme'),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),

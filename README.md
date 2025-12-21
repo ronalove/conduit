@@ -1,6 +1,6 @@
-# Conduit
+# Knights Network
 
-Client IRCv3 multi-plateforme (Windows, macOS, iOS, Android) developpé avec Flutter.
+Client IRCv3 multi-plateforme (Windows, macOS, iOS, Android) developpe avec Flutter.
 
 ## Configuration
 
@@ -35,8 +35,8 @@ Voir le dossier `docs/` pour la documentation complete :
 
 ```bash
 # Cloner le repository
-git clone https://github.com/r9r-dev/conduit.git
-cd conduit
+git clone https://github.com/r9r-dev/knights-network.git
+cd knights-network
 
 # Installer les dependances
 flutter pub get
@@ -87,7 +87,7 @@ flutter run
 
 ## Roadmap
 
-Voir les [Milestones](https://github.com/r9r-dev/conduit/milestones) pour le suivi du developpement.
+Voir les [Milestones](https://github.com/r9r-dev/knights-network/milestones) pour le suivi du developpement.
 
 ## References
 

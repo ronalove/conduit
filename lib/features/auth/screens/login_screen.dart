@@ -119,7 +119,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         AppSpacing.gapVerticalLg,
         Text(
-          'Conduit',
+          'Knights Network',
           style: AppTextStyles.displayLarge,
         ),
         AppSpacing.gapVerticalXs,

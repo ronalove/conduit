@@ -4,12 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Conduit is a modern IRCv3 client built with Flutter for cross-platform desktop and mobile support (macOS, Windows, iOS, Android). It implements 18+ IRCv3 specifications including SASL authentication, message history, typing indicators, and more.
+Knights Network is a modern IRCv3 client built with Flutter for cross-platform desktop and mobile support (macOS, Windows, iOS, Android). It implements 18+ IRCv3 specifications including SASL authentication, message history, typing indicators, and more.
 
-**Conduit est le client dedie au serveur Ronan.** Il n'est pas concu comme un client IRC generique :
+**Knights Network est le client dedie au serveur Ronan.** Il n'est pas concu comme un client IRC generique :
 - Un seul serveur preconfigure (pas de configuration d'URL, pas d'ajout de serveurs)
 - L'URL du serveur changera entre dev (IP locale) et prod (IP publique) mais c'est toujours le meme serveur
 - Les credentials utilisateur sont stockes localement avec flutter_secure_storage
+
+La configuration du serveur Ergo est disponible dans le dossier `/Volumes/public/docker/ircd`
+Le fichier: ircd.yaml
+Tu es autorisé à modifier ce fichier s'il est nécessaire de modifier le serveur Ergo pour répondre aux besoins.
 
 ## Development Commands
 
