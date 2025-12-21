@@ -207,6 +207,118 @@
             padding: 40px;
             color: rgba(255, 255, 255, 0.5);
         }
+
+        .btn {
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: none;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 12px;
+            padding: 24px;
+            width: 100%;
+            max-width: 420px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal h2 {
+            color: #fff;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+        }
+
+        .message.success {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #22c55e;
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -227,6 +339,7 @@
                 <input type="text" id="search" placeholder="Rechercher un compte..." oninput="filterAccounts()">
             </div>
             <div class="stats" id="stats"></div>
+            <button class="btn" onclick="openModal()">Nouveau compte</button>
         </div>
 
         <div class="section">
@@ -244,6 +357,26 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-overlay" onclick="closeModalOnOverlay(event)">
+        <div class="modal">
+            <h2>Creer un compte</h2>
+            <form id="create-form" onsubmit="createAccount(event)">
+                <div class="form-group">
+                    <label for="new-username">Nom d'utilisateur</label>
+                    <input type="text" id="new-username" placeholder="pseudo" pattern="[a-zA-Z0-9_-]+" minlength="2" maxlength="32" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-password">Mot de passe</label>
+                    <input type="password" id="new-password" placeholder="Minimum 8 caracteres" minlength="8" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+                    <button type="submit" class="btn" id="create-btn">Creer</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -309,7 +442,72 @@
         function showMessage(text, type) {
             message.textContent = text;
             message.className = 'message ' + type;
+            if (type === 'success') {
+                setTimeout(() => {
+                    message.className = 'message';
+                }, 5000);
+            }
         }
+
+        function openModal() {
+            document.getElementById('modal-overlay').classList.add('active');
+            document.getElementById('new-username').focus();
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('active');
+            document.getElementById('create-form').reset();
+        }
+
+        function closeModalOnOverlay(event) {
+            if (event.target === document.getElementById('modal-overlay')) {
+                closeModal();
+            }
+        }
+
+        async function createAccount(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('new-username').value.trim();
+            const password = document.getElementById('new-password').value;
+            const btn = document.getElementById('create-btn');
+
+            if (!username || !password) return;
+
+            btn.disabled = true;
+            btn.textContent = 'Creation...';
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        accountName: username,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    closeModal();
+                    showMessage(`Compte "${username}" cree avec succes`, 'success');
+                    loadAccounts();
+                } else {
+                    showMessage(data.error || 'Erreur lors de la creation', 'error');
+                }
+            } catch (error) {
+                showMessage('Erreur de connexion au serveur', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Creer';
+            }
+        }
+
+        // Fermer le modal avec Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
 
         // Charger les comptes au demarrage
         loadAccounts();
