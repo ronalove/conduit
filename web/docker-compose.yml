@@ -1,0 +1,17 @@
+services:
+  registration:
+    image: ghcr.io/r9r-dev/knights-registration:latest
+    container_name: knights-registration
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - ERGO_API_URL=${ERGO_API_URL:-http://ergo:8089}
+      - ERGO_API_TOKEN=${ERGO_API_TOKEN}
+      - PORT=8080
+    networks:
+      - ircd_default
+
+networks:
+  ircd_default:
+    external: true
