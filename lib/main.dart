@@ -371,6 +371,7 @@ class _LayoutDemoState extends ConsumerState<LayoutDemo> {
 
   Widget _buildLogsView() {
     final logs = ref.watch(ircLogsProvider);
+    final currentNick = ref.watch(authProvider).username;
 
     return Column(
       children: [
@@ -401,7 +402,7 @@ class _LayoutDemoState extends ConsumerState<LayoutDemo> {
         Expanded(
           child: Container(
             color: AppColors.surfaceContainer,
-            child: IrcLogsView(logs: logs),
+            child: IrcLogsView(logs: logs, currentNick: currentNick),
           ),
         ),
       ],

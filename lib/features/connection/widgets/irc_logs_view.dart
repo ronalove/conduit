@@ -2,6 +2,113 @@ import 'package:flutter/material.dart';
 
 import '../../../theme/theme.dart';
 
+/// Descriptions for IRC commands and numerics.
+const Map<String, String> ircCommandDescriptions = {
+  // Named commands
+  'PING': 'Test de connexion (serveur)',
+  'PONG': 'Reponse au test de connexion',
+  'JOIN': 'Rejoindre un canal',
+  'PART': 'Quitter un canal',
+  'QUIT': 'Deconnexion du serveur',
+  'PRIVMSG': 'Message prive ou de canal',
+  'NOTICE': 'Notice (message systeme)',
+  'NICK': 'Changement de pseudo',
+  'MODE': 'Changement de mode',
+  'KICK': 'Expulsion d\'un canal',
+  'INVITE': 'Invitation a un canal',
+  'TOPIC': 'Sujet du canal',
+  'CAP': 'Negociation des capacites',
+  'AUTHENTICATE': 'Authentification SASL',
+  'ACCOUNT': 'Changement de compte',
+  'CHGHOST': 'Changement d\'hote',
+  'SETNAME': 'Changement de realname',
+  'AWAY': 'Statut absence',
+  'BATCH': 'Lot de messages',
+  'TAGMSG': 'Message avec tags uniquement',
+  'MARKREAD': 'Marqueur de lecture',
+  'CHATHISTORY': 'Historique des messages',
+  'WHO': 'Information utilisateur',
+  'WHOIS': 'Information detaillee utilisateur',
+  'LIST': 'Liste des canaux',
+  'NAMES': 'Liste des utilisateurs du canal',
+  'MONITOR': 'Surveillance de connexion',
+  'ACK': 'Accusé de reception',
+  // Numerics - Registration
+  '001': 'RPL_WELCOME - Message de bienvenue',
+  '002': 'RPL_YOURHOST - Info serveur hote',
+  '003': 'RPL_CREATED - Date creation serveur',
+  '004': 'RPL_MYINFO - Info serveur',
+  '005': 'RPL_ISUPPORT - Capacites du serveur',
+  // Numerics - Stats
+  '221': 'RPL_UMODEIS - Modes utilisateur',
+  '251': 'RPL_LUSERCLIENT - Stats clients',
+  '252': 'RPL_LUSEROP - Nombre d\'operateurs',
+  '253': 'RPL_LUSERUNKNOWN - Connexions inconnues',
+  '254': 'RPL_LUSERCHANNELS - Nombre de canaux',
+  '255': 'RPL_LUSERME - Stats serveur local',
+  // Numerics - Away/User
+  '301': 'RPL_AWAY - Message d\'absence',
+  '302': 'RPL_USERHOST - Info hote utilisateur',
+  '303': 'RPL_ISON - Utilisateur en ligne',
+  '305': 'RPL_UNAWAY - Plus absent',
+  '306': 'RPL_NOWAWAY - Maintenant absent',
+  '311': 'RPL_WHOISUSER - WHOIS info utilisateur',
+  '312': 'RPL_WHOISSERVER - WHOIS serveur',
+  '313': 'RPL_WHOISOPERATOR - WHOIS operateur',
+  '314': 'RPL_WHOWASUSER - WHOWAS info',
+  '315': 'RPL_ENDOFWHO - Fin de WHO',
+  '317': 'RPL_WHOISIDLE - WHOIS temps inactif',
+  '318': 'RPL_ENDOFWHOIS - Fin de WHOIS',
+  '319': 'RPL_WHOISCHANNELS - WHOIS canaux',
+  // Numerics - Channel
+  '322': 'RPL_LIST - Liste des canaux',
+  '323': 'RPL_LISTEND - Fin de liste',
+  '324': 'RPL_CHANNELMODEIS - Modes du canal',
+  '331': 'RPL_NOTOPIC - Pas de sujet',
+  '332': 'RPL_TOPIC - Sujet du canal',
+  '333': 'RPL_TOPICWHOTIME - Info sujet',
+  '341': 'RPL_INVITING - Confirmation invitation',
+  '352': 'RPL_WHOREPLY - Reponse WHO',
+  '353': 'RPL_NAMREPLY - Liste des noms',
+  '354': 'RPL_WHOSPCRPL - Reponse WHOX',
+  '366': 'RPL_ENDOFNAMES - Fin des noms',
+  '368': 'RPL_ENDOFBANLIST - Fin liste bans',
+  '369': 'RPL_ENDOFWHOWAS - Fin de WHOWAS',
+  // Numerics - MOTD
+  '372': 'RPL_MOTD - Ligne MOTD',
+  '375': 'RPL_MOTDSTART - Debut MOTD',
+  '376': 'RPL_ENDOFMOTD - Fin MOTD',
+  // Numerics - Ergo specific
+  '379': 'RPL_WHOISMODES - Modes utilisateur WHOIS',
+  // Numerics - Errors
+  '401': 'ERR_NOSUCHNICK - Nick inexistant',
+  '402': 'ERR_NOSUCHSERVER - Serveur inexistant',
+  '403': 'ERR_NOSUCHCHANNEL - Canal inexistant',
+  '404': 'ERR_CANNOTSENDTOCHAN - Envoi impossible',
+  '405': 'ERR_TOOMANYCHANNELS - Trop de canaux',
+  '421': 'ERR_UNKNOWNCOMMAND - Commande inconnue',
+  '422': 'ERR_NOMOTD - Pas de MOTD',
+  '432': 'ERR_ERRONEUSNICKNAME - Nick invalide',
+  '433': 'ERR_NICKNAMEINUSE - Nick deja utilise',
+  '442': 'ERR_NOTONCHANNEL - Pas sur le canal',
+  '451': 'ERR_NOTREGISTERED - Non enregistre',
+  '461': 'ERR_NEEDMOREPARAMS - Parametres manquants',
+  '462': 'ERR_ALREADYREGISTERED - Deja enregistre',
+  '473': 'ERR_INVITEONLYCHAN - Canal sur invitation',
+  '474': 'ERR_BANNEDFROMCHAN - Banni du canal',
+  '475': 'ERR_BADCHANNELKEY - Mauvais mot de passe',
+  '482': 'ERR_CHANOPRIVSNEEDED - Droits op requis',
+  // Numerics - SASL
+  '900': 'RPL_LOGGEDIN - Connecte au compte',
+  '901': 'RPL_LOGGEDOUT - Deconnecte du compte',
+  '903': 'RPL_SASLSUCCESS - SASL reussi',
+  '904': 'ERR_SASLFAIL - SASL echoue',
+  '905': 'ERR_SASLTOOLONG - SASL trop long',
+  '906': 'ERR_SASLABORTED - SASL annule',
+  '907': 'ERR_SASLALREADY - Deja authentifie',
+  '908': 'RPL_SASLMECHS - Mecanismes SASL',
+};
+
 /// IRC color palette (mIRC colors).
 const List<Color> ircColors = [
   Color(0xFFFFFFFF), // 0: white
@@ -258,6 +365,38 @@ class ParsedIrcLog {
   }
 
   bool get isNumeric => int.tryParse(command) != null;
+
+  /// Get description for the command.
+  String get commandDescription {
+    return ircCommandDescriptions[command] ?? command;
+  }
+
+  /// Get content with the current nick removed from the beginning.
+  String contentWithoutNick(String? currentNick) {
+    if (currentNick == null || content.isEmpty) return content;
+
+    // Check if content starts with the current nick (case insensitive)
+    final lowerContent = content.toLowerCase();
+    final lowerNick = currentNick.toLowerCase();
+
+    if (lowerContent.startsWith(lowerNick)) {
+      final afterNick = content.substring(currentNick.length);
+      // Remove leading space or colon after nick
+      if (afterNick.startsWith(' ')) {
+        return afterNick.substring(1);
+      }
+      if (afterNick.startsWith(':')) {
+        return afterNick.substring(1);
+      }
+      // If nothing follows or next char is part of the nick, return original
+      if (afterNick.isEmpty || afterNick[0].contains(RegExp(r'[a-zA-Z0-9]'))) {
+        return content;
+      }
+      return afterNick;
+    }
+
+    return content;
+  }
 }
 
 /// Widget to display IRC logs in a clean format.
@@ -265,9 +404,11 @@ class IrcLogsView extends StatelessWidget {
   const IrcLogsView({
     super.key,
     required this.logs,
+    this.currentNick,
   });
 
   final List<String> logs;
+  final String? currentNick;
 
   @override
   Widget build(BuildContext context) {
@@ -289,24 +430,29 @@ class IrcLogsView extends StatelessWidget {
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(AppSpacing.sm),
-      itemCount: logs.length,
-      itemBuilder: (context, index) {
-        final parsed = ParsedIrcLog.parse(logs[index]);
-        return _LogLine(log: parsed);
-      },
+    return SelectionArea(
+      child: ListView.builder(
+        padding: const EdgeInsets.all(AppSpacing.sm),
+        itemCount: logs.length,
+        itemBuilder: (context, index) {
+          final parsed = ParsedIrcLog.parse(logs[index]);
+          return _LogLine(log: parsed, currentNick: currentNick);
+        },
+      ),
     );
   }
 }
 
 class _LogLine extends StatelessWidget {
-  const _LogLine({required this.log});
+  const _LogLine({required this.log, this.currentNick});
 
   final ParsedIrcLog log;
+  final String? currentNick;
 
   @override
   Widget build(BuildContext context) {
+    final displayContent = log.contentWithoutNick(currentNick);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 1),
       child: Row(
@@ -342,21 +488,24 @@ class _LogLine extends StatelessWidget {
 
           const SizedBox(width: 6),
 
-          // Command badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-            decoration: BoxDecoration(
-              color: log.commandColor.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(3),
-            ),
-            child: Text(
-              log.command,
-              style: TextStyle(
-                fontFamily: 'monospace',
-                fontFamilyFallback: const ['Menlo', 'Consolas', 'Courier New', 'Courier'],
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: log.commandColor,
+          // Command badge with tooltip
+          Tooltip(
+            message: log.commandDescription,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+              decoration: BoxDecoration(
+                color: log.commandColor.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(3),
+              ),
+              child: Text(
+                log.command,
+                style: TextStyle(
+                  fontFamily: 'monospace',
+                  fontFamilyFallback: const ['Menlo', 'Consolas', 'Courier New', 'Courier'],
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: log.commandColor,
+                ),
               ),
             ),
           ),
@@ -365,7 +514,7 @@ class _LogLine extends StatelessWidget {
 
           // Content with IRC formatting
           Expanded(
-            child: _buildFormattedContent(log.content),
+            child: _buildFormattedContent(displayContent),
           ),
         ],
       ),
