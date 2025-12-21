@@ -63,9 +63,9 @@ Commands Queue <- UI Events/Riverpod State <-----------------------------+
 Each feature is self-contained with `providers/`, `screens/`, `widgets/`, `models/`, `services/`:
 - **auth/**: SASL authentication flow
 - **connection/**: Server connection management
-- **channels/**: Channel list and management
+- **channels/**: Channel list and management, MODE/AWAY handlers
 - **chat/**: Message display and sending
-- **users/**: User list and profiles
+- **users/**: User list, context menu, user info dialog, user actions service
 - **settings/**: App configuration
 
 ### UI System (`lib/layouts/`, `lib/theme/`)
@@ -107,6 +107,9 @@ Uses **drift** (SQLite ORM) for message persistence:
 - `lib/core/constants/irc_numerics.dart`: IRC numeric reply codes
 - `lib/core/database/database.dart`: SQLite database for messages
 - `lib/features/chat/providers/messages_provider.dart`: Message state management
+- `lib/features/channels/providers/channels_provider.dart`: Channel state, MODE/AWAY handlers
+- `lib/features/users/providers/channel_users_provider.dart`: User list providers (family)
+- `lib/features/users/services/user_actions_service.dart`: User context menu actions
 - `lib/routing/`: go_router navigation setup
 
 ## IRCv3 Capabilities Implemented
