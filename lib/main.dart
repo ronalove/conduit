@@ -307,7 +307,7 @@ class _LayoutDemoState extends ConsumerState<LayoutDemo> {
                           ),
                           const SizedBox(width: AppSpacing.sm),
                           Text(
-                            'ronan.lol',
+                            'ke.network',
                             style: AppTextStyles.bodySmall.copyWith(
                               color: AppColors.textSecondary,
                             ),

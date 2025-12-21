@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../theme/theme.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/settings_provider.dart';
+
+/// Provider for app package info.
+final packageInfoProvider = FutureProvider<PackageInfo>((ref) async {
+  return PackageInfo.fromPlatform();
+});
 
 /// Settings screen with all app settings.
 class SettingsScreen extends ConsumerWidget {
@@ -104,7 +110,7 @@ class SettingsScreen extends ConsumerWidget {
             children: [
               _SettingsTile(
                 title: 'Server',
-                subtitle: 'irc.example.com:6697',
+                subtitle: 'irc.ronan.lol',
                 icon: Icons.dns_outlined,
                 trailing: Container(
                   padding: const EdgeInsets.symmetric(
@@ -179,24 +185,9 @@ class SettingsScreen extends ConsumerWidget {
             context,
             title: 'About',
             children: [
-              _SettingsTile(
-                title: 'Version',
-                subtitle: '1.0.0 (Build 1)',
-                icon: Icons.info_outline,
-              ),
+              _VersionTile(ref: ref),
               _buildDivider(),
-              _SettingsTile(
-                title: 'Licenses',
-                subtitle: 'Open source licenses',
-                icon: Icons.description_outlined,
-                onTap: () {
-                  showLicensePage(
-                    context: context,
-                    applicationName: 'Knights Network',
-                    applicationVersion: '1.0.0',
-                  );
-                },
-              ),
+              _LicensesTile(ref: ref),
               _buildDivider(),
               _SettingsTile(
                 title: 'Source Code',
@@ -589,6 +580,65 @@ class _SettingsSwitch extends StatelessWidget {
         onChanged: onChanged,
       ),
       onTap: () => onChanged(!value),
+    );
+  }
+}
+
+/// Version tile that displays the real app version.
+class _VersionTile extends StatelessWidget {
+  const _VersionTile({required this.ref});
+
+  final WidgetRef ref;
+
+  @override
+  Widget build(BuildContext context) {
+    final packageInfoAsync = ref.watch(packageInfoProvider);
+
+    return packageInfoAsync.when(
+      data: (info) => _SettingsTile(
+        title: 'Version',
+        subtitle: '${info.version} (Build ${info.buildNumber})',
+        icon: Icons.info_outline,
+      ),
+      loading: () => const _SettingsTile(
+        title: 'Version',
+        subtitle: 'Loading...',
+        icon: Icons.info_outline,
+      ),
+      error: (_, _) => const _SettingsTile(
+        title: 'Version',
+        subtitle: 'Unknown',
+        icon: Icons.info_outline,
+      ),
+    );
+  }
+}
+
+/// Licenses tile that opens the licenses page with real version.
+class _LicensesTile extends StatelessWidget {
+  const _LicensesTile({required this.ref});
+
+  final WidgetRef ref;
+
+  @override
+  Widget build(BuildContext context) {
+    final packageInfoAsync = ref.watch(packageInfoProvider);
+    final version = packageInfoAsync.maybeWhen(
+      data: (info) => info.version,
+      orElse: () => '',
+    );
+
+    return _SettingsTile(
+      title: 'Licenses',
+      subtitle: 'Open source licenses',
+      icon: Icons.description_outlined,
+      onTap: () {
+        showLicensePage(
+          context: context,
+          applicationName: 'Knights Network',
+          applicationVersion: version,
+        );
+      },
     );
   }
 }
