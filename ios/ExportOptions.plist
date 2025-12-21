@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Export method for TestFlight distribution -->
+    <key>method</key>
+    <string>app-store</string>
+
+    <!-- Team ID from Apple Developer account -->
+    <!-- Replace with your actual Team ID -->
+    <key>teamID</key>
+    <string>YOUR_TEAM_ID</string>
+
+    <!-- Upload to App Store Connect -->
+    <key>destination</key>
+    <string>upload</string>
+
+    <!-- Signing style -->
+    <key>signingStyle</key>
+    <string>manual</string>
+
+    <!-- Provisioning profiles mapping -->
+    <!-- Replace bundle ID and profile name with your actual values -->
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>lol.ronan.conduit</key>
+        <string>YOUR_PROVISIONING_PROFILE_NAME</string>
+    </dict>
+
+    <!-- Generate app store icons -->
+    <key>generateAppStoreInformation</key>
+    <true/>
+
+    <!-- Upload symbols for crash reporting -->
+    <key>uploadSymbols</key>
+    <true/>
+</dict>
+</plist>

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Knights Network is a modern IRCv3 client built with Flutter for cross-platform desktop and mobile support (macOS, Windows, iOS, Android). It implements 18+ IRCv3 specifications including SASL authentication, message history, typing indicators, and more.
+Knights Network is a modern IRCv3 client built with Flutter for cross-platform desktop and mobile support (macOS, Windows, Linux, iOS, Android). It implements 18+ IRCv3 specifications including SASL authentication, message history, typing indicators, and more.
 
 **Knights Network est le client dedie au serveur Ronan.** Il n'est pas concu comme un client IRC generique :
 - Un seul serveur preconfigure (pas de configuration d'URL, pas d'ajout de serveurs)
@@ -28,6 +28,7 @@ flutter pub run build_runner watch  # continuous mode
 # Run application
 flutter run -d macos    # macOS
 flutter run -d windows  # Windows
+flutter run -d linux    # Linux
 flutter run -d ios      # iOS
 flutter run -d android  # Android
 
@@ -124,6 +125,29 @@ Security: STS (Strict Transport Security)
 
 - Flutter 3.38+
 - Dart 3.10+
+
+## CI/CD & Releases
+
+### GitHub Actions Workflow
+- `.github/workflows/release.yml`: Build automatique sur push de tag `v*`
+- Genere: APK (Android), DMG (macOS), ZIP (Windows), AppImage (Linux)
+- iOS/TestFlight: workflow commente, a activer avec compte Apple Developer
+
+### Creer une release
+```bash
+./scripts/bump_version.sh 1.0.0   # Met a jour pubspec.yaml, cree tag, push
+```
+
+### Secrets GitHub requis (Android)
+- `ANDROID_KEYSTORE_BASE64`: keystore encode en base64
+- `ANDROID_KEY_ALIAS`: alias de la cle
+- `ANDROID_KEY_PASSWORD`: mot de passe de la cle
+- `ANDROID_STORE_PASSWORD`: mot de passe du keystore
+
+### Secrets GitHub requis (iOS - plus tard)
+- `APPLE_CERTIFICATE_BASE64`, `APPLE_CERTIFICATE_PASSWORD`
+- `APPLE_PROVISIONING_PROFILE_BASE64`
+- `APPLE_API_KEY_ID`, `APPLE_API_ISSUER_ID`, `APPLE_API_KEY_BASE64`
 
 ## Commit, Push policies
 After finishing a feature and user tells you it respect critera acceptance, always:

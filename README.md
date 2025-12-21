@@ -16,6 +16,7 @@ Client IRCv3 multi-plateforme (Windows, macOS, iOS, Android) developpe avec Flut
 
 - Windows
 - macOS
+- Linux
 - iOS
 - Android
 
@@ -44,6 +45,48 @@ flutter pub get
 # Lancer l'application
 flutter run
 ```
+
+## Releases
+
+Les releases sont automatiquement buildees via GitHub Actions lors d'un push de tag.
+
+### Creer une release
+
+```bash
+# Bumper la version et creer le tag
+./scripts/bump_version.sh 1.0.0
+
+# Ou manuellement:
+# 1. Modifier version dans pubspec.yaml
+# 2. Commit
+# 3. git tag v1.0.0
+# 4. git push origin main && git push origin v1.0.0
+```
+
+### Artifacts generes
+
+| Plateforme | Format | Notes |
+|------------|--------|-------|
+| Android | APK | Installer via "sources inconnues" |
+| macOS | DMG | Clic-droit > Ouvrir (non signe) |
+| Windows | ZIP | Extraire et lancer .exe |
+| Linux | AppImage | `chmod +x` puis executer |
+| iOS | TestFlight | Necessite compte Apple Developer |
+
+### Configuration Android Signing (optionnel)
+
+Pour signer les APK avec votre propre cle :
+
+1. Generer un keystore:
+   ```bash
+   keytool -genkey -v -keystore upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+   ```
+
+2. Ajouter les secrets GitHub:
+   - `ANDROID_KEYSTORE_BASE64`: `base64 -i upload-keystore.jks`
+   - `ANDROID_KEY_ALIAS`: `upload`
+   - `ANDROID_KEY_PASSWORD`: votre mot de passe
+   - `ANDROID_STORE_PASSWORD`: votre mot de passe
 
 ## Features IRCv3 Supportees
 
