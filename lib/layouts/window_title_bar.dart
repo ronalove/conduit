@@ -22,9 +22,14 @@ class WindowTitleBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // macOS uses native title bar with hidden style, no custom bar needed
+    // macOS: add spacing for traffic lights (native window buttons)
     if (Platform.isMacOS) {
-      return const SizedBox.shrink();
+      return DragToMoveArea(
+        child: Container(
+          height: 28,
+          color: Colors.transparent,
+        ),
+      );
     }
 
     // Only show on Windows/Linux
