@@ -13,7 +13,7 @@ import '../../connection/providers/connection_provider.dart';
 import '../../connection/providers/irc_session_manager.dart';
 import '../../users/models/channel_user.dart';
 import '../models/channel.dart';
-import '../screens/channel_list_screen.dart';
+import '../models/channel_info.dart';
 
 /// State containing all channel information.
 class ChannelsState {

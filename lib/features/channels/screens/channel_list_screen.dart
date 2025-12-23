@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../theme/theme.dart';
+import '../models/channel_info.dart';
 import '../widgets/channel_tile.dart';
 
 /// Screen displaying the list of channels and PMs.
@@ -175,34 +176,4 @@ class ChannelListScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Information about a channel.
-class ChannelInfo {
-  const ChannelInfo({
-    required this.name,
-    this.topic,
-    this.unreadCount = 0,
-    this.hasMention = false,
-  });
-
-  final String name;
-  final String? topic;
-  final int unreadCount;
-  final bool hasMention;
-}
-
-/// Information about a private message conversation.
-class PrivateMessageInfo {
-  const PrivateMessageInfo({
-    required this.nickname,
-    this.unreadCount = 0,
-    this.hasMention = false,
-    this.isAway = false,
-  });
-
-  final String nickname;
-  final int unreadCount;
-  final bool hasMention;
-  final bool isAway;
 }

@@ -2,6 +2,7 @@
 library;
 
 export 'models/channel.dart';
+export 'models/channel_info.dart';
 export 'providers/channels_provider.dart';
 export 'screens/channel_list_screen.dart';
 export 'widgets/channel_list_dialog.dart';

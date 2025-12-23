@@ -1,5 +1,5 @@
 import '../../users/models/channel_user.dart';
-import '../screens/channel_list_screen.dart';
+import 'channel_info.dart';
 
 /// Topic information for a channel.
 class ChannelTopic {
