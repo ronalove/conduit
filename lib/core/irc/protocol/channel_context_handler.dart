@@ -2,7 +2,6 @@ import 'dart:async';
 
 import '../parser/irc_message.dart';
 import '../parser/message_tags.dart';
-import '../parser/source_parser.dart';
 
 /// Represents a private message with channel context.
 class ChannelContextMessage {

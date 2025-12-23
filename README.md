@@ -188,6 +188,7 @@ Les contributions sont les bienvenues ! Consultez les [issues ouvertes](https://
 ## Documentation
 
 - [Manuel utilisateur](docs/USER_MANUAL.md)
+- [Code Review / Audit technique](docs/CODE_REVIEW.md)
 - [Roadmap](https://github.com/r9r-dev/conduit/milestones)
 
 ### Références IRCv3
@@ -200,9 +201,3 @@ Les contributions sont les bienvenues ! Consultez les [issues ouvertes](https://
 ## Licence
 
 MIT - Voir le fichier [LICENSE](LICENSE) pour plus de détails.
-
-&nbsp;
-
-<p align="center">
-  <sub>Fait avec Flutter</sub>
-</p>

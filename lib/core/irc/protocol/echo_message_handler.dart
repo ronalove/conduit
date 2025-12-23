@@ -2,7 +2,6 @@ import 'dart:async';
 
 import '../parser/irc_message.dart';
 import '../parser/irc_message_extensions.dart';
-import '../parser/source_parser.dart';
 
 /// Represents a pending message awaiting echo confirmation.
 class PendingMessage {

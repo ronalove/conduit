@@ -1,5 +1,4 @@
 import 'irc_message.dart';
-import 'source_parser.dart';
 
 /// Represents extended JOIN information.
 ///

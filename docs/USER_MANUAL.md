@@ -56,6 +56,11 @@ Accessible via Settings :
 - Apparence
 - Connexion
 
+## Documentation Technique
+
+Pour les developpeurs souhaitant contribuer au projet :
+- [Code Review / Audit technique](CODE_REVIEW.md) - Analyse du code, problemes identifies et plan d'amelioration
+
 ## Support
 
 Pour signaler un bug ou demander une feature :

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import '../parser/irc_message.dart';
-import '../parser/source_parser.dart';
 
 /// Represents an invitation to a channel.
 class InviteNotification {

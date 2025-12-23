@@ -2,8 +2,6 @@ import 'dart:async';
 
 import '../parser/irc_message.dart';
 import '../parser/irc_message_extensions.dart';
-import '../parser/message_tags.dart';
-import '../parser/source_parser.dart';
 
 /// Represents a reply relationship between messages.
 class ReplyInfo {

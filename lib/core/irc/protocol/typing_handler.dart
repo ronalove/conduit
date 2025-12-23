@@ -3,7 +3,6 @@ import 'dart:async';
 import '../commands/typing_commands.dart';
 import '../parser/irc_message.dart';
 import '../parser/message_tags.dart';
-import '../parser/source_parser.dart';
 
 /// Represents a typing notification from a user.
 class TypingNotification {
