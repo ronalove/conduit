@@ -187,9 +187,9 @@ class MutableEchoMessageHandler extends EchoMessageHandler {
 
   MutableEchoMessageHandler({
     required String currentNick,
-    Duration pendingTimeout = const Duration(seconds: 30),
+    super.pendingTimeout,
   })  : _mutableNick = currentNick,
-        super(currentNick: currentNick, pendingTimeout: pendingTimeout);
+        super(currentNick: currentNick);
 
   @override
   bool _isOurNick(String nick) {
