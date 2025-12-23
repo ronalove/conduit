@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'core/constants/app_constants.dart';
 import 'features/auth/auth.dart';
 import 'features/channels/channels.dart';
 import 'features/chat/chat.dart';
@@ -90,7 +91,7 @@ class _DesktopWrapperState extends ConsumerState<_DesktopWrapper>
 
     // Periodically save window geometry on desktop
     if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
-      _saveTimer = Timer.periodic(const Duration(seconds: 2), (_) {
+      _saveTimer = Timer.periodic(AppBehaviorConstants.autoSaveDelay, (_) {
         _saveGeometry();
       });
     }

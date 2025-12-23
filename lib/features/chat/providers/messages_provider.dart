@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/constants/app_constants.dart';
 import '../../../core/database/database.dart';
 import '../../../core/irc/commands/message_commands.dart';
 import '../../../core/irc/parser/irc_message.dart';
@@ -19,8 +20,8 @@ import '../models/messages_state.dart';
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
   final db = AppDatabase();
 
-  // Clean up old messages on startup (90 days retention)
-  final cutoff = DateTime.now().subtract(const Duration(days: 90));
+  // Clean up old messages on startup
+  final cutoff = DateTime.now().subtract(MessageConstants.retentionDuration);
   db.deleteMessagesOlderThan(cutoff);
 
   ref.onDispose(() => db.close());
@@ -45,12 +46,6 @@ class MessagesNotifier extends Notifier<MessagesState> {
   late AppDatabase _db;
 
   StreamSubscription<String>? _linesSubscription;
-
-  /// Maximum messages to keep in memory per channel.
-  static const int _maxMessagesInMemory = 200;
-
-  /// Messages to load per page.
-  static const int _loadBatchSize = 50;
 
   @override
   MessagesState build() {
@@ -404,8 +399,8 @@ class MessagesNotifier extends Notifier<MessagesState> {
       messages.add(message);
 
       // Trim if exceeding max
-      if (messages.length > _maxMessagesInMemory) {
-        messages = messages.sublist(messages.length - _maxMessagesInMemory);
+      if (messages.length > MessageConstants.maxMessagesInMemory) {
+        messages = messages.sublist(messages.length - MessageConstants.maxMessagesInMemory);
       }
 
       channelState = channelState.copyWith(
@@ -551,7 +546,7 @@ class MessagesNotifier extends Notifier<MessagesState> {
       // Load from database
       final dbMessages = await _db.getMessagesForChannel(
         channelKey,
-        limit: _loadBatchSize,
+        limit: MessageConstants.loadBatchSize,
         beforeTimestamp: beforeTimestamp,
       );
 
@@ -607,7 +602,7 @@ class MessagesNotifier extends Notifier<MessagesState> {
 
     final dbMessages = await _db.getMessagesForChannel(
       channelKey,
-      limit: _loadBatchSize,
+      limit: MessageConstants.loadBatchSize,
     );
 
     if (dbMessages.isEmpty) {

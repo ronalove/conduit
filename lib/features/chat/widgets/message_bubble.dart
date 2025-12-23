@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../core/constants/app_constants.dart';
 import '../../../theme/theme.dart';
 import '../models/chat_message.dart';
 import 'reply_preview.dart';
@@ -112,7 +113,7 @@ class MessageBubble extends StatelessWidget {
             GestureDetector(
               onTap: () => onUserTap?.call(message.sender),
               child: CircleAvatar(
-                radius: 16,
+                radius: UiConstants.avatarRadius,
                 backgroundColor: nickColor.withValues(alpha: 0.2),
                 child: Text(
                   message.sender.isNotEmpty
@@ -180,7 +181,7 @@ class MessageBubble extends StatelessWidget {
         // Timestamp
         if (showTimestamp)
           SizedBox(
-            width: 48,
+            width: UiConstants.timestampWidth,
             child: Text(
               _formatTime(message.timestamp),
               style: AppTextStyles.timestamp,
@@ -189,7 +190,7 @@ class MessageBubble extends StatelessWidget {
 
         // Nickname
         SizedBox(
-          width: 100,
+          width: UiConstants.nicknameColumnWidth,
           child: GestureDetector(
             onTap: () => onUserTap?.call(message.sender),
             child: Text(
@@ -233,7 +234,7 @@ class MessageBubble extends StatelessWidget {
       children: [
         if (showTimestamp)
           SizedBox(
-            width: 48,
+            width: UiConstants.timestampWidth,
             child: Text(
               _formatTime(message.timestamp),
               style: AppTextStyles.timestamp,
@@ -269,7 +270,7 @@ class MessageBubble extends StatelessWidget {
       children: [
         if (showTimestamp)
           SizedBox(
-            width: 48,
+            width: UiConstants.timestampWidth,
             child: Text(
               _formatTime(message.timestamp),
               style: AppTextStyles.timestamp,
@@ -298,7 +299,7 @@ class MessageBubble extends StatelessWidget {
       children: [
         if (showTimestamp)
           SizedBox(
-            width: 48,
+            width: UiConstants.timestampWidth,
             child: Text(
               _formatTime(message.timestamp),
               style: AppTextStyles.timestamp,
@@ -327,7 +328,7 @@ class MessageBubble extends StatelessWidget {
       children: [
         if (showTimestamp)
           SizedBox(
-            width: 48,
+            width: UiConstants.timestampWidth,
             child: Text(
               _formatTime(message.timestamp),
               style: AppTextStyles.timestamp,
