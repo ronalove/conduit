@@ -280,7 +280,7 @@ class _LayoutDemoState extends ConsumerState<LayoutDemo> {
                     _showBrowseChannelsDialog(context);
                   },
                   onAddChannel: () {
-                    _showJoinChannelDialog(context);
+                    JoinChannelDialog.show(context);
                   },
                 ),
               ),
@@ -410,50 +410,6 @@ class _LayoutDemoState extends ConsumerState<LayoutDemo> {
     );
   }
 
-  void _showJoinChannelDialog(BuildContext context) {
-    final controller = TextEditingController();
-    final channelsNotifier = ref.read(channelsProvider.notifier);
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Rejoindre un canal'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: '#canal',
-            labelText: 'Nom du canal',
-          ),
-          onSubmitted: (value) {
-            if (value.isNotEmpty) {
-              final channel = value.startsWith('#') ? value : '#$value';
-              channelsNotifier.joinChannel(channel);
-              Navigator.of(context).pop();
-            }
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Annuler'),
-          ),
-          FilledButton(
-            onPressed: () {
-              final value = controller.text;
-              if (value.isNotEmpty) {
-                final channel = value.startsWith('#') ? value : '#$value';
-                channelsNotifier.joinChannel(channel);
-                Navigator.of(context).pop();
-              }
-            },
-            child: const Text('Rejoindre'),
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> _showBrowseChannelsDialog(BuildContext context) async {
     final channelsNotifier = ref.read(channelsProvider.notifier);
 
@@ -509,7 +465,7 @@ class _MobilePlaceholder extends ConsumerWidget {
           _showBrowseChannelsDialog(context, ref);
         },
         onAddChannel: () {
-          _showJoinChannelDialog(context, ref);
+          JoinChannelDialog.show(context);
         },
       ),
       chatPage: ChatScreen(
@@ -536,50 +492,6 @@ class _MobilePlaceholder extends ConsumerWidget {
       ),
       settingsPage: SettingsScreen(
         onBack: onOpenSettings,
-      ),
-    );
-  }
-
-  void _showJoinChannelDialog(BuildContext context, WidgetRef ref) {
-    final controller = TextEditingController();
-    final channelsNotifier = ref.read(channelsProvider.notifier);
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Rejoindre un canal'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: '#canal',
-            labelText: 'Nom du canal',
-          ),
-          onSubmitted: (value) {
-            if (value.isNotEmpty) {
-              final channel = value.startsWith('#') ? value : '#$value';
-              channelsNotifier.joinChannel(channel);
-              Navigator.of(context).pop();
-            }
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Annuler'),
-          ),
-          FilledButton(
-            onPressed: () {
-              final value = controller.text;
-              if (value.isNotEmpty) {
-                final channel = value.startsWith('#') ? value : '#$value';
-                channelsNotifier.joinChannel(channel);
-                Navigator.of(context).pop();
-              }
-            },
-            child: const Text('Rejoindre'),
-          ),
-        ],
       ),
     );
   }

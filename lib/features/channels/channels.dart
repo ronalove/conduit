@@ -7,3 +7,4 @@ export 'providers/channels_provider.dart';
 export 'screens/channel_list_screen.dart';
 export 'widgets/channel_list_dialog.dart';
 export 'widgets/channel_tile.dart';
+export 'widgets/join_channel_dialog.dart';
