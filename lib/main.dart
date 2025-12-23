@@ -118,14 +118,14 @@ class _DesktopWrapperState extends ConsumerState<_DesktopWrapper>
   }
 
   Future<void> _disconnectSession() async {
-    print('[Knights Network] Fermeture de l\'application...');
+    debugPrint('[Knights Network] Fermeture de l\'application...');
     try {
       await ref.read(ircSessionProvider.notifier).endSession();
-      print('[Knights Network] Session IRC déconnectée.');
+      debugPrint('[Knights Network] Session IRC déconnectée.');
     } catch (_) {
       // Ignore errors during shutdown
     }
-    print('[Knights Network] Au revoir !');
+    debugPrint('[Knights Network] Au revoir !');
   }
 
   Future<void> _saveGeometry() async {
