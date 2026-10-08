@@ -191,7 +191,7 @@ class SettingsScreen extends ConsumerWidget {
               _buildDivider(),
               _SettingsTile(
                 title: 'Source Code',
-                subtitle: 'github.com/r9r-dev/conduit',
+                subtitle: 'github.com/ronalove/conduit',
                 icon: Icons.code,
               ),
             ],

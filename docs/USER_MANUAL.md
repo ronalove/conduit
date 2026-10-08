@@ -64,4 +64,4 @@ Pour les developpeurs souhaitant contribuer au projet :
 ## Support
 
 Pour signaler un bug ou demander une feature :
-- [Issues GitHub](https://github.com/r9r-dev/conduit/issues)
+- [Issues GitHub](https://github.com/ronalove/conduit/issues)

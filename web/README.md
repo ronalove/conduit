@@ -26,7 +26,7 @@ ERGO_API_URL=http://ergo:8089
 docker-compose up -d
 ```
 
-L'image est automatiquement buildee et pushee sur `ghcr.io/r9r-dev/knights-registration:latest` via GitHub Actions.
+L'image est automatiquement buildee et pushee sur `ghcr.io/ronalove/knights-registration:latest` via GitHub Actions.
 
 ### 3. Configurer le reseau
 

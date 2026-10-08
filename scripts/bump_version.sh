@@ -98,5 +98,5 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     git -C "$PROJECT_ROOT" push origin main
     git -C "$PROJECT_ROOT" push origin "$TAG"
     echo -e "${GREEN}Pushed! GitHub Actions will build the release.${NC}"
-    echo -e "Check progress at: https://github.com/r9r-dev/conduit/actions"
+    echo -e "Check progress at: https://github.com/ronalove/conduit/actions"
 fi

@@ -1,6 +1,6 @@
 services:
   registration:
-    image: ghcr.io/r9r-dev/knights-registration:latest
+    image: ghcr.io/ronalove/knights-registration:latest
     container_name: knights-registration
     restart: unless-stopped
     ports:

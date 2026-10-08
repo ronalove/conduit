@@ -9,17 +9,17 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/r9r-dev/conduit/releases/latest">
-    <img src="https://img.shields.io/github/v/release/r9r-dev/conduit?style=flat-square&color=blue&cacheSeconds=3600" alt="Dernière release">
+  <a href="https://github.com/ronalove/conduit/releases/latest">
+    <img src="https://img.shields.io/github/v/release/ronalove/conduit?style=flat-square&color=blue&cacheSeconds=3600" alt="Dernière release">
   </a>
-  <a href="https://github.com/r9r-dev/conduit/actions/workflows/release.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/r9r-dev/conduit/release.yml?style=flat-square&label=build&cacheSeconds=3600" alt="Statut CI">
+  <a href="https://github.com/ronalove/conduit/actions/workflows/release.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/ronalove/conduit/release.yml?style=flat-square&label=build&cacheSeconds=3600" alt="Statut CI">
   </a>
-  <a href="https://github.com/r9r-dev/conduit/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/r9r-dev/conduit?style=flat-square&cacheSeconds=3600" alt="Licence">
+  <a href="https://github.com/ronalove/conduit/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/ronalove/conduit?style=flat-square&cacheSeconds=3600" alt="Licence">
   </a>
-  <a href="https://github.com/r9r-dev/conduit/releases">
-    <img src="https://img.shields.io/github/downloads/r9r-dev/conduit/total?style=flat-square&color=green&cacheSeconds=3600" alt="Téléchargements">
+  <a href="https://github.com/ronalove/conduit/releases">
+    <img src="https://img.shields.io/github/downloads/ronalove/conduit/total?style=flat-square&color=green&cacheSeconds=3600" alt="Téléchargements">
   </a>
 </p>
 
@@ -65,10 +65,10 @@ Téléchargez la dernière version pour votre plateforme :
 
 | Plateforme | Téléchargement | Instructions |
 |------------|----------------|--------------|
-| **Android** | [APK](https://github.com/r9r-dev/conduit/releases/latest) | Activer "Sources inconnues" dans les paramètres |
-| **macOS** | [DMG](https://github.com/r9r-dev/conduit/releases/latest) | Clic-droit > Ouvrir (application non signée) |
-| **Windows** | [ZIP](https://github.com/r9r-dev/conduit/releases/latest) | Extraire et lancer l'exécutable |
-| **Linux** | [AppImage](https://github.com/r9r-dev/conduit/releases/latest) | `chmod +x` puis exécuter |
+| **Android** | [APK](https://github.com/ronalove/conduit/releases/latest) | Activer "Sources inconnues" dans les paramètres |
+| **macOS** | [DMG](https://github.com/ronalove/conduit/releases/latest) | Clic-droit > Ouvrir (application non signée) |
+| **Windows** | [ZIP](https://github.com/ronalove/conduit/releases/latest) | Extraire et lancer l'exécutable |
+| **Linux** | [AppImage](https://github.com/ronalove/conduit/releases/latest) | `chmod +x` puis exécuter |
 
 > **iOS** : Disponible prochainement via TestFlight
 
@@ -151,7 +151,7 @@ Téléchargez la dernière version pour votre plateforme :
 
 ```bash
 # Cloner le repository
-git clone https://github.com/r9r-dev/conduit.git
+git clone https://github.com/ronalove/conduit.git
 cd conduit
 
 # Installer les dépendances
@@ -181,7 +181,7 @@ flutter analyze
 
 ## Contribuer
 
-Les contributions sont les bienvenues ! Consultez les [issues ouvertes](https://github.com/r9r-dev/conduit/issues) pour voir les tâches en cours.
+Les contributions sont les bienvenues ! Consultez les [issues ouvertes](https://github.com/ronalove/conduit/issues) pour voir les tâches en cours.
 
 &nbsp;
 
@@ -189,7 +189,7 @@ Les contributions sont les bienvenues ! Consultez les [issues ouvertes](https://
 
 - [Manuel utilisateur](docs/USER_MANUAL.md)
 - [Code Review / Audit technique](docs/CODE_REVIEW.md)
-- [Roadmap](https://github.com/r9r-dev/conduit/milestones)
+- [Roadmap](https://github.com/ronalove/conduit/milestones)
 
 ### Références IRCv3
 

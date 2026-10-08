@@ -9,7 +9,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: r9r-dev/knights-registration
+  IMAGE_NAME: ronalove/knights-registration
 
 jobs:
   build-and-push:
